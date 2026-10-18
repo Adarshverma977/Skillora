@@ -49,9 +49,14 @@ const resetPasswordSchema = z.object({
     .max(72, "Password cannot exceed 72 characters"),
 });
 
+const verifyEmailSchema = z.object({
+  token: z.string().trim().min(1, "Verification token is required"),
+});
+
 module.exports = {
   registerSchema,
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  verifyEmailSchema,
 };
