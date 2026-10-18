@@ -6,13 +6,18 @@ const { protect } = require("../middlewares/authMiddleware");
 
 const validateRequest = require("../middlewares/validateRequest");
 
-const { createEntrySchema, entryIdSchema, updateEntrySchema } = require("../validators/entryValidators");
+const { createEntrySchema, entryIdSchema, updateEntrySchema, getEntriesQuerySchema, } = require("../validators/entryValidators");
 
 const router = express.Router();
 
 router.post("/", protect, validateRequest(createEntrySchema), createEntry);
 
-router.get("/", protect, getEntries);
+router.get(
+  "/",
+  protect,
+  validateRequest(getEntriesQuerySchema, "query"),
+  getEntries,
+);
 
 router.get(
   "/:id",

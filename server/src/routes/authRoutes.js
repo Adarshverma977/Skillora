@@ -1,7 +1,11 @@
 const express = require("express");
-const { register, verifyEmailHandler, login, logout, forgotPasswordHandler, resetPasswordHandler, getMe } = require("../controllers/authController");
+
+const { register, verifyEmailHandler, login, logout, forgotPasswordHandler, resetPasswordHandler, getMe, updateProfile, changePassword, } = require("../controllers/authController");
+
 const validateRequest = require("../middlewares/validateRequest");
-const { registerSchema, verifyEmailSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema } = require("../validators/authValidators");
+
+const { registerSchema, verifyEmailSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, updateProfileSchema, changePasswordSchema } = require("../validators/authValidators");
+
 const { protect } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
@@ -31,5 +35,19 @@ router.post(
 );
 
 router.get("/me", protect, getMe);
+
+router.patch(
+  "/profile",
+  protect,
+  validateRequest(updateProfileSchema),
+  updateProfile,
+);
+
+router.patch(
+  "/change-password",
+  protect,
+  validateRequest(changePasswordSchema),
+  changePassword,
+);
 
 module.exports = router;

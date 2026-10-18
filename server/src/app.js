@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/authRoutes");
 const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
 const entryRoutes = require("./routes/entryRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const app = express();
 
@@ -16,8 +17,12 @@ app.use(
 );
 
 app.use(express.json({ limit: "10kb" }));
+
 app.use(express.urlencoded({ extended: true }));
+
 app.use(cookieParser());
+
+app.use("/api/v1/dashboard", dashboardRoutes);
 
 // Health check
 app.get("/api/v1/health", (req, res) => {

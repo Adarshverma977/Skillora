@@ -32,7 +32,7 @@ const protect = asyncHandler(async (req, res, next) => {
     throw new AppError("Invalid authentication token.", 401);
   }
 
-  const user = await User.findById(decoded.sub);
+  const user = await User.findById(decoded.sub).select("+tokenVersion");
 
   if (!user) {
     throw new AppError(
@@ -43,6 +43,16 @@ const protect = asyncHandler(async (req, res, next) => {
 
   if (!user.isEmailVerified) {
     throw new AppError("Please verify your email before continuing.", 403);
+  }
+
+  const tokenVersion = decoded.tokenVersion ?? 0;
+  const currentTokenVersion = user.tokenVersion ?? 0;
+
+  if (tokenVersion !== currentTokenVersion) {
+    throw new AppError(
+      "Your session is no longer valid. Please log in again.",
+      401,
+    );
   }
 
   req.user = user;

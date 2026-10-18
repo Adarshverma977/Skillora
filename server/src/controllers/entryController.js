@@ -34,14 +34,65 @@ const createEntry = asyncHandler(async (req, res) => {
 });
 
 const getEntries = asyncHandler(async (req, res) => {
-  const entries = await LearningEntry.find({
-    user: req.user._id,
-  }).sort({ learningDate: -1, createdAt: -1 });
+  const { page, limit, search, difficulty, sort } = req.query;
 
+  // 1. Logged-in user ki entries only
+  const filter = {
+    user: req.user._id,
+  };
+
+  // 2. Difficulty filter
+  if (difficulty) {
+    filter.difficulty = difficulty;
+  }
+
+  // 3. Search in topic and description
+  if (search) {
+    const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    filter.$or = [
+      { topic: { $regex: escapedSearch, $options: "i" } },
+      { description: { $regex: escapedSearch, $options: "i" } },
+    ];
+  }
+
+  // 4. Pagination
+  const currentPage = Number(page);
+  const pageSize = Number(limit);
+  const skip = (currentPage - 1) * pageSize;
+
+  // 5. Sorting
+  const sortOrder =
+    sort === "oldest"
+      ? { learningDate: 1, createdAt: 1 }
+      : { learningDate: -1, createdAt: -1 };
+
+  // 6. Fetch entries and total count
+  const [entries, totalEntries] = await Promise.all([
+    LearningEntry.find(filter)
+      .sort(sortOrder)
+      .skip(skip)
+      .limit(pageSize)
+      .lean(),
+
+    LearningEntry.countDocuments(filter),
+  ]);
+
+  const totalPages = Math.ceil(totalEntries / pageSize);
+
+  // 7. Response
   res.status(200).json({
     success: true,
     message: "Learning entries fetched successfully.",
     results: entries.length,
+    pagination: {
+      currentPage,
+      pageSize,
+      totalEntries,
+      totalPages,
+      hasNextPage: currentPage < totalPages,
+      hasPreviousPage: currentPage > 1,
+    },
     data: {
       entries,
     },

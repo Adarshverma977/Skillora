@@ -14,13 +14,12 @@ const registerUser = async ({ name, email, password }) => {
     throw new AppError("Unable to register with this email address", 409);
   }
 
-  const hashedPassword = await bcrypt.hash(password, 12);
   const { token, tokenHash } = generateSecureToken();
 
   const user = await User.create({
     name,
     email,
-    password: hashedPassword,
+    password,
     isEmailVerified: false,
     emailVerificationTokenHash: tokenHash,
     emailVerificationExpires: new Date(Date.now() + 15 * 60 * 1000),
@@ -48,6 +47,7 @@ const registerUser = async ({ name, email, password }) => {
     });
   } catch (error) {
     await User.findByIdAndDelete(user._id);
+
     throw new AppError(
       "Unable to send verification email. Please try again.",
       503,
@@ -104,9 +104,16 @@ const loginUser = async ({ email, password }) => {
     throw new AppError("Authentication is not configured.", 500);
   }
 
-  const token = jwt.sign({ sub: user._id.toString() }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || "15m",
-  });
+  const token = jwt.sign(
+    {
+      sub: user._id.toString(),
+      tokenVersion: user.tokenVersion ?? 0,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: process.env.JWT_EXPIRES_IN || "15m",
+    },
+  );
 
   return {
     token,
@@ -124,7 +131,6 @@ const logoutUser = async () => {
     message: "Logout successful.",
   };
 };
-
 
 const forgotPassword = async ({ email }) => {
   const genericMessage =
@@ -164,7 +170,7 @@ const forgotPassword = async ({ email }) => {
       ...emailContent,
     });
   } catch (error) {
-    // Do not leave a usable reset token after email delivery fails.
+    // Remove the reset token if email delivery fails.
     user.passwordResetTokenHash = undefined;
     user.passwordResetExpires = undefined;
     await user.save();
@@ -199,10 +205,14 @@ const resetPassword = async ({ token, password }) => {
     );
   }
 
-  user.password = await bcrypt.hash(password, 12);
+  // User.js pre-save middleware hashes this password.
+  user.password = password;
 
   user.passwordResetTokenHash = undefined;
   user.passwordResetExpires = undefined;
+
+  // Invalidate previously issued JWTs.
+  user.tokenVersion = (user.tokenVersion ?? 0) + 1;
 
   await user.save();
 

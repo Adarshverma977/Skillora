@@ -1,8 +1,20 @@
-const asyncHandler = require("../utils/asyncHandler");
-
-const { registerUser, verifyEmail, loginUser, logoutUser, forgotPassword, resetPassword } = require("../services/authService");
+const bcrypt = require("bcrypt");
 
 const User = require("../models/User");
+
+const AppError = require("../utils/AppError");
+
+const asyncHandler = require("../utils/asyncHandler");
+
+const {
+  registerUser,
+  verifyEmail,
+  loginUser,
+  logoutUser,
+  forgotPassword,
+  resetPassword,
+} = require("../services/authService");
+
 
 const register = asyncHandler(async (req, res) => {
   const result = await registerUser(req.body);
@@ -79,6 +91,65 @@ const getMe = asyncHandler(async (req, res) => {
   });
 });
 
+const updateProfile = asyncHandler(async (req, res) => {
+  const user = req.user;
+
+  if (req.body.name !== undefined) {
+    user.name = req.body.name;
+  }
+
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Profile updated successfully.",
+    data: {
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isEmailVerified: user.isEmailVerified,
+        profilePhoto: user.profilePhoto,
+      },
+    },
+  });
+});
+
+
+const changePassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  const user = await User.findById(req.user._id).select(
+    "+password +tokenVersion",
+  );
+
+  if (!user) {
+    throw new AppError("User not found.", 404);
+  }
+
+  const isCurrentPasswordValid = await bcrypt.compare(
+    currentPassword,
+    user.password,
+  );
+
+  if (!isCurrentPasswordValid) {
+    throw new AppError("Current password is incorrect.", 400);
+  }
+
+  user.password = newPassword;
+
+  // Invalidate all previously issued JWT tokens.
+  user.tokenVersion = (user.tokenVersion ?? 0) + 1;
+
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Password changed successfully. Please log in again.",
+  });
+});
+
+
 module.exports = {
   register,
   verifyEmailHandler,
@@ -87,4 +158,6 @@ module.exports = {
   forgotPasswordHandler,
   resetPasswordHandler,
   getMe,
+  updateProfile,
+  changePassword,
 };
