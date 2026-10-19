@@ -8,9 +8,15 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   await connectDB();
 
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`Skillora server running on port ${PORT}`);
   });
+
+  return server;
 };
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = { startServer };
