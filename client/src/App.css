@@ -1,0 +1,18 @@
+
+.app {
+  min-height: 100vh;
+}
+
+main {
+  min-width: 0;
+}
+
+section[id] {
+  scroll-margin-top: calc(var(--header-height) + 16px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

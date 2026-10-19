@@ -1,0 +1,236 @@
+
+.features-section {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      ellipse at 8% 45%,
+      rgba(196, 181, 253, 0.13),
+      transparent 38%
+    ),
+    var(--bg);
+}
+
+.features-heading {
+  max-width: 660px;
+  margin: 0 auto 52px;
+  text-align: center;
+}
+
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  padding: 8px 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+}
+
+.features-heading h2 {
+  margin-bottom: 18px;
+  font-size: clamp(30px, 4vw, 46px);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.features-heading > p {
+  max-width: 570px;
+  margin: 0 auto;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.feature-card {
+  position: relative;
+  display: flex;
+  min-height: 290px;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 27px 23px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+}
+
+.feature-card::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--primary),
+    var(--secondary)
+  );
+  content: '';
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+.feature-icon {
+  display: grid;
+  width: 49px;
+  height: 49px;
+  flex-shrink: 0;
+  place-items: center;
+  margin-bottom: 24px;
+  border-radius: 15px;
+}
+
+.feature-purple {
+  background: #f0eaff;
+  color: #8152e8;
+}
+
+.feature-pink {
+  background: #ffe8f3;
+  color: #db4c98;
+}
+
+.feature-blue {
+  background: #e6efff;
+  color: #4c76d8;
+}
+
+.feature-orange {
+  background: #fff0df;
+  color: #d98936;
+}
+
+.feature-number {
+  position: absolute;
+  top: 29px;
+  right: 22px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  opacity: 0.75;
+}
+
+.feature-card h3 {
+  margin-bottom: 11px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+  line-height: 1.55;
+}
+
+.feature-card > p {
+  margin-bottom: 24px;
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.feature-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 15px;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.feature-card-bottom svg {
+  flex-shrink: 0;
+  color: var(--primary);
+  transition: transform 180ms ease;
+}
+
+.feature-card:hover .feature-card-bottom svg {
+  transform: translate(2px, -2px);
+}
+
+[data-theme='dark'] .feature-purple {
+  background: #30234d;
+  color: #c4b5fd;
+}
+
+[data-theme='dark'] .feature-pink {
+  background: #40233a;
+  color: #f9a8d4;
+}
+
+[data-theme='dark'] .feature-blue {
+  background: #202d4b;
+  color: #a5bfff;
+}
+
+[data-theme='dark'] .feature-orange {
+  background: #3b2d20;
+  color: #fdba74;
+}
+
+@media (max-width: 1050px) {
+  .features-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .feature-card {
+    min-height: 270px;
+  }
+}
+
+@media (max-width: 560px) {
+  .features-heading {
+    margin-bottom: 34px;
+  }
+
+  .features-heading h2 {
+    font-size: 30px;
+  }
+
+  .features-heading > p {
+    font-size: 13px;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .feature-card {
+    min-height: 245px;
+    padding: 23px 20px 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feature-card,
+  .feature-card::before,
+  .feature-card-bottom svg {
+    transition: none;
+  }
+}
