@@ -8,7 +8,7 @@ const initialForm = {
   topic: "",
   description: "",
   studyDurationMinutes: "",
-  difficulty: "medium",
+  difficulty: "Medium",
   learningDate: new Date().toISOString().slice(0, 10),
 };
 
@@ -144,9 +144,9 @@ const CreateEntryPage = () => {
                 value={form.difficulty}
                 onChange={handleChange}
               >
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
               </select>
             </div>
           </div>

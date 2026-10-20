@@ -5,7 +5,7 @@ import {
   getEntryById,
   updateEntry,
 } from "../services/entryService";
-import "./CreateEntryPage.css";
+import "./EditEntryPage.css";
 
 const EditEntryPage = () => {
   const { id } = useParams();
@@ -35,9 +35,14 @@ const EditEntryPage = () => {
             studyDurationMinutes: String(
               entry.studyDurationMinutes ?? ""
             ),
-            difficulty: entry.difficulty || "medium",
+            difficulty: entry.difficulty
+              ? entry.difficulty.charAt(0).toUpperCase() +
+              entry.difficulty.slice(1).toLowerCase()
+              : "Medium",
             learningDate: entry.learningDate
-              ? new Date(entry.learningDate).toISOString().slice(0, 10)
+              ? new Date(entry.learningDate)
+                .toISOString()
+                .slice(0, 10)
               : new Date().toISOString().slice(0, 10),
           });
         }
@@ -63,7 +68,11 @@ const EditEntryPage = () => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setForm((current) => ({ ...current, [name]: value }));
+
+    setForm((current) => ({
+      ...current,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (event) => {
@@ -115,8 +124,12 @@ const EditEntryPage = () => {
   if (!form) {
     return (
       <main className="create-entry-page">
-        <p role="alert">{error || "Learning entry not found."}</p>
+        <p role="alert">
+          {error || "Learning entry not found."}
+        </p>
+
         <button
+          type="button"
           className="create-entry-cancel"
           onClick={() => navigate("/dashboard")}
         >
@@ -140,10 +153,15 @@ const EditEntryPage = () => {
         <header className="create-entry-heading">
           <span>YOUR LEARNING JOURNAL</span>
           <h1>Edit your entry.</h1>
-          <p>Update your notes and keep your learning journal accurate.</p>
+          <p>
+            Update your notes and keep your learning journal accurate.
+          </p>
         </header>
 
-        <form className="create-entry-form" onSubmit={handleSubmit}>
+        <form
+          className="create-entry-form"
+          onSubmit={handleSubmit}
+        >
           {error && (
             <p className="create-entry-error" role="alert">
               {error}
@@ -163,7 +181,9 @@ const EditEntryPage = () => {
           </div>
 
           <div className="create-entry-field">
-            <label htmlFor="description">What did you learn?</label>
+            <label htmlFor="description">
+              What did you learn?
+            </label>
             <textarea
               id="description"
               name="description"
@@ -199,16 +219,19 @@ const EditEntryPage = () => {
                 name="difficulty"
                 value={form.difficulty}
                 onChange={handleChange}
+                required
               >
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
               </select>
             </div>
           </div>
 
           <div className="create-entry-field">
-            <label htmlFor="learningDate">Learning date</label>
+            <label htmlFor="learningDate">
+              Learning date
+            </label>
             <input
               id="learningDate"
               name="learningDate"
@@ -234,7 +257,9 @@ const EditEntryPage = () => {
               className="create-entry-submit"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Saving changes…" : "Save changes"}
+              {isSubmitting
+                ? "Saving changes…"
+                : "Save changes"}
             </button>
           </div>
         </form>

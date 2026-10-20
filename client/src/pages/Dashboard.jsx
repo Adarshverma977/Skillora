@@ -50,7 +50,7 @@ const Dashboard = () => {
     } catch (err) {
       setError(
         err.response?.data?.message ||
-          "Unable to load your learning entries. Please try again."
+        "Unable to load your learning entries. Please try again."
       );
     } finally {
       setIsLoading(false);
@@ -99,7 +99,7 @@ const Dashboard = () => {
     } catch (err) {
       setError(
         err.response?.data?.message ||
-          "Unable to delete this entry. Please try again."
+        "Unable to delete this entry. Please try again."
       );
     } finally {
       setDeletingId(null);
@@ -111,10 +111,10 @@ const Dashboard = () => {
     const hours = Math.floor(safeMinutes / 60);
     const remainingMinutes = safeMinutes % 60;
 
-    if (hours === 0) return `${ remainingMinutes } min`;
-    if (remainingMinutes === 0) return `${ hours } hr`;
+    if (hours === 0) return `${remainingMinutes} min`;
+    if (remainingMinutes === 0) return `${hours} hr`;
 
-    return `${ hours } hr ${ remainingMinutes } min`;
+    return `${hours} hr ${remainingMinutes} min`;
   };
 
   const totalStudyMinutes = entries.reduce(
@@ -248,9 +248,9 @@ const Dashboard = () => {
               disabled={isLoading}
             >
               <option value="">All difficulties</option>
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
+              <option value="Easy">Easy</option>
+              <option value="Medium">Medium</option>
+              <option value="Hard">Hard</option>
             </select>
 
             {(search || difficulty) && (
@@ -373,23 +373,21 @@ const Dashboard = () => {
                           <button
                             type="button"
                             onClick={() =>
-                              navigate(
-                                `/ learning - entries / ${ entryId }/edit`
-                              )
+                              navigate(`/learning-entries/${entryId}/edit`)
                             }
                           >
-  Edit
+                            Edit
                           </button >
 
-  <button
-    type="button"
-    disabled={deletingId === entryId}
-    onClick={() => handleDeleteEntry(entryId)}
-  >
-    {deletingId === entryId
-      ? "Deleting…"
-      : "Delete"}
-  </button>
+                          <button
+                            type="button"
+                            disabled={deletingId === entryId}
+                            onClick={() => handleDeleteEntry(entryId)}
+                          >
+                            {deletingId === entryId
+                              ? "Deleting…"
+                              : "Delete"}
+                          </button>
                         </div >
                       </div >
                     </article >
@@ -397,43 +395,43 @@ const Dashboard = () => {
                 })}
               </div >
 
-  {/* Pagination */ }
-{
-  totalPages > 1 && (
-    <div className="dashboard-pagination">
-      <p>
-        Showing {firstVisibleEntry}–{lastVisibleEntry} of{" "}
-        {totalEntries} entries
-      </p>
+              {/* Pagination */}
+              {
+                totalPages > 1 && (
+                  <div className="dashboard-pagination">
+                    <p>
+                      Showing {firstVisibleEntry}–{lastVisibleEntry} of{" "}
+                      {totalEntries} entries
+                    </p>
 
-      <div className="dashboard-pagination-actions">
-        <button
-          type="button"
-          disabled={isLoading || page <= 1}
-          onClick={() =>
-            setPage((currentPage) => currentPage - 1)
-          }
-        >
-          Previous
-        </button>
+                    <div className="dashboard-pagination-actions">
+                      <button
+                        type="button"
+                        disabled={isLoading || page <= 1}
+                        onClick={() =>
+                          setPage((currentPage) => currentPage - 1)
+                        }
+                      >
+                        Previous
+                      </button>
 
-        <span>
-          Page {page} of {totalPages}
-        </span>
+                      <span>
+                        Page {page} of {totalPages}
+                      </span>
 
-        <button
-          type="button"
-          disabled={isLoading || page >= totalPages}
-          onClick={() =>
-            setPage((currentPage) => currentPage + 1)
-          }
-        >
-          Next
-        </button>
-      </div>
-    </div>
-  )
-}
+                      <button
+                        type="button"
+                        disabled={isLoading || page >= totalPages}
+                        onClick={() =>
+                          setPage((currentPage) => currentPage + 1)
+                        }
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )
+              }
             </>
           )}
         </section >
