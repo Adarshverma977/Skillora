@@ -1,0 +1,110 @@
+
+.verify-email-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 20px;
+  font-family: "Poppins", sans-serif;
+  color: var(--text-primary, #f5f0ff);
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(153, 88, 255, 0.18), transparent 42%),
+    radial-gradient(ellipse at 90% 90%, rgba(218, 92, 224, 0.10), transparent 38%),
+    var(--bg-primary, #100d1b);
+}
+
+.verify-email-card {
+  width: 100%;
+  max-width: 480px;
+  padding: 44px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid var(--border-color, #342544);
+  border-radius: 24px;
+  background: var(--surface-primary, #191326);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+  text-align: center;
+}
+
+.verify-email-icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 24px;
+  color: #bd96ff;
+  stroke-width: 1.6;
+}
+
+.verify-email-icon.success {
+  color: #58d6a1;
+}
+
+.verify-email-icon.error {
+  color: #ff8298;
+}
+
+.verify-email-card h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 5vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.verify-email-card p {
+  max-width: 360px;
+  margin: 14px 0 28px;
+  color: var(--text-secondary, #b9b0cc);
+  font-size: 0.88rem;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+
+.verify-email-card a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 22px;
+  border-radius: 12px;
+  color: #fff;
+  background: linear-gradient(110deg, #9254f6, #b44cf0);
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.verify-email-card a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 9px 24px rgba(153, 77, 245, 0.25);
+}
+
+.verify-email-card a:focus-visible {
+  outline: 2px solid #c5a2ff;
+  outline-offset: 4px;
+}
+
+@media (max-width: 480px) {
+  .verify-email-page {
+    padding: 20px 14px;
+  }
+
+  .verify-email-card {
+    padding: 34px 22px;
+    border-radius: 20px;
+  }
+
+  .verify-email-icon {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .verify-email-card a {
+    transition: none;
+  }
+
+  .verify-email-card a:hover {
+    transform: none;
+  }
+}

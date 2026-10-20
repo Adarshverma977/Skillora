@@ -1,0 +1,25 @@
+
+.auth-header {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  border-bottom: 1px solid var(--border-color, #342544);
+  background: var(--bg-primary, #100d1b);
+}
+
+.auth-header-inner {
+  width: min(100% - 40px, 1400px);
+  min-height: 88px;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+@media (max-width: 480px) {
+  .auth-header-inner {
+    width: calc(100% - 32px);
+    min-height: 72px;
+  }
+}

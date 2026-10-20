@@ -1,0 +1,175 @@
+
+.create-entry-page {
+  min-height: 100vh;
+  padding: 40px 20px 72px;
+  background: var(--bg);
+  color: var(--text-primary);
+}
+
+.create-entry-container {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.create-entry-back {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.create-entry-back:hover {
+  color: var(--primary);
+}
+
+.create-entry-heading {
+  margin: 36px 0 28px;
+}
+
+.create-entry-heading > span {
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.create-entry-heading h1 {
+  margin: 12px 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  letter-spacing: -1.5px;
+}
+
+.create-entry-heading p {
+  max-width: 580px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.create-entry-form {
+  padding: clamp(20px, 4vw, 36px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+.create-entry-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-bottom: 22px;
+}
+
+.create-entry-field label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.create-entry-field input,
+.create-entry-field textarea,
+.create-entry-field select {
+  width: 100%;
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 11px;
+  background: var(--bg);
+  color: var(--text-primary);
+  font: inherit;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.create-entry-field textarea {
+  resize: vertical;
+  line-height: 1.7;
+}
+
+.create-entry-field input:focus,
+.create-entry-field textarea:focus,
+.create-entry-field select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.create-entry-field input::placeholder,
+.create-entry-field textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.create-entry-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.create-entry-error {
+  margin: 0 0 22px;
+  padding: 12px 14px;
+  border: 1px solid #ef4444;
+  border-radius: 10px;
+  color: #dc2626;
+  font-size: 0.9rem;
+}
+
+.create-entry-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.create-entry-cancel,
+.create-entry-submit {
+  min-height: 44px;
+  padding: 11px 18px;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 160ms ease;
+}
+
+.create-entry-cancel {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.create-entry-submit {
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  color: white;
+}
+
+.create-entry-submit:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.create-entry-cancel:disabled,
+.create-entry-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+@media (max-width: 560px) {
+  .create-entry-page {
+    padding: 26px 16px 48px;
+  }
+
+  .create-entry-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .create-entry-actions {
+    flex-direction: column-reverse;
+  }
+
+  .create-entry-actions button {
+    width: 100%;
+  }
+}
