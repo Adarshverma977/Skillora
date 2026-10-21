@@ -1,6 +1,6 @@
 const express = require("express");
 
-const { createEntry, getEntries, getEntryById, updateEntry, deleteEntry, } = require("../controllers/entryController");
+const { createEntry, getEntries,getEntryAnalytics, getEntryById, updateEntry, deleteEntry, } = require("../controllers/entryController");
 
 const { protect } = require("../middlewares/authMiddleware");
 
@@ -18,6 +18,8 @@ router.get(
   validateRequest(getEntriesQuerySchema, "query"),
   getEntries,
 );
+
+router.get("/analytics", protect, getEntryAnalytics);
 
 router.get(
   "/:id",

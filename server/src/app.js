@@ -5,6 +5,7 @@ const authRoutes = require("./routes/authRoutes");
 const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
 const entryRoutes = require("./routes/entryRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
@@ -36,6 +37,8 @@ app.get("/api/v1/health", (req, res) => {
 app.use("/api/v1/auth", authRoutes);
 
 app.use("/api/v1/entries", entryRoutes);
+
+app.use("/api/v1/users", userRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

@@ -84,7 +84,7 @@ const verifyEmail = async (token) => {
 };
 
 const loginUser = async ({ email, password }) => {
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({ email }).select("+password +tokenVersion");
 
   if (!user) {
     throw new AppError("Invalid email or password.", 401);
