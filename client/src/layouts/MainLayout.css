@@ -272,13 +272,14 @@
   position: sticky;
   z-index: 50;
   top: 0;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 22px;
   min-height: var(--layout-topbar-height);
   padding: 13px 32px;
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -440,6 +441,7 @@
   max-width: 1800px;
   margin-inline: auto;
   padding: 30px 32px 42px;
+  min-width: 0;
 }
 
 /* Mobile backdrop */
@@ -617,3 +619,4 @@
     animation-duration: 0.01ms !important;
   }
 }
+

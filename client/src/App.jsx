@@ -12,6 +12,7 @@ import VerifyEmailPage from "./pages/VerifyEmailPage";
 import Dashboard from "./pages/Dashboard";
 import CreateEntryPage from "./pages/CreateEntryPage";
 import EditEntryPage from "./pages/EditEntryPage";
+import ProfilePage from "./pages/ProfilePage";
 
 import MainLayout from "./layouts/MainLayout";
 
@@ -32,6 +33,8 @@ const App = () => {
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
+
+              <Route path="/profile" element={<ProfilePage />} />
 
               <Route
                 path="/learning-entries/new"

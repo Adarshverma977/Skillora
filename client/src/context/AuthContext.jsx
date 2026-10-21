@@ -35,6 +35,19 @@ export const AuthProvider = ({ children }) => {
     setUser(authUser);
   }, []);
 
+  const updateUser = useCallback((updates) => {
+    setUser((currentUser) => {
+      const updatedUser = {
+        ...(currentUser || {}),
+        ...updates,
+      };
+
+      localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
+
+      return updatedUser;
+    });
+  }, []);
+
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
@@ -49,9 +62,10 @@ export const AuthProvider = ({ children }) => {
       user,
       isAuthenticated: Boolean(token),
       login,
+      updateUser,
       logout,
     }),
-    [token, user, login, logout]
+    [token, user, login, updateUser, logout]
   );
 
   return (
