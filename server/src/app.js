@@ -6,6 +6,7 @@ const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
 const entryRoutes = require("./routes/entryRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const userRoutes = require("./routes/userRoutes");
+const uploadRoutes = require("./routes/uploadRoutes");
 
 const app = express();
 
@@ -39,6 +40,8 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/entries", entryRoutes);
 
 app.use("/api/v1/users", userRoutes);
+
+app.use("/api/v1/uploads", uploadRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
