@@ -26,6 +26,12 @@ export const getEntries = async (params = {}) => {
   return response.data;
 };
 
+export const getEntryAnalytics = async () => {
+  const response = await entryApi.get("/analytics");
+  return response.data;
+};
+
+
 export const getEntryById = async (id) => {
   const response = await entryApi.get(`/${id}`);
   return response.data;

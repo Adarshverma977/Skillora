@@ -1,19 +1,35 @@
+
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import {
   getEntries,
+  getEntryAnalytics,
   deleteEntry,
 } from "../services/entryService";
 import "./Dashboard.css";
 
 const PAGE_SIZE = 10;
 
+const formatDuration = (minutes) => {
+  const safeMinutes = Number(minutes) || 0;
+  const hours = Math.floor(safeMinutes / 60);
+  const remainingMinutes = safeMinutes % 60;
+
+  if (hours === 0) return `${remainingMinutes} min`;
+  if (remainingMinutes === 0) return `${hours} hr`;
+
+  return `${hours} hr ${remainingMinutes} min`;
+};
+
 const Dashboard = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [entries, setEntries] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
+  const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(true);
+  const [analyticsError, setAnalyticsError] = useState("");
   const [pagination, setPagination] = useState(null);
 
   const [page, setPage] = useState(1);
@@ -24,6 +40,27 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState(null);
+
+  const fetchAnalytics = useCallback(async () => {
+    setIsAnalyticsLoading(true);
+    setAnalyticsError("");
+
+    try {
+      const response = await getEntryAnalytics();
+      setAnalytics(response?.data ?? null);
+
+      if (!response?.data) {
+        setAnalyticsError("Analytics data is unavailable.");
+      }
+    } catch (err) {
+      setAnalyticsError(
+        err.response?.data?.message ||
+        "Unable to load learning analytics."
+      );
+    } finally {
+      setIsAnalyticsLoading(false);
+    }
+  }, []);
 
   const fetchEntries = useCallback(async () => {
     setIsLoading(true);
@@ -61,10 +98,9 @@ const Dashboard = () => {
     fetchEntries();
   }, [fetchEntries]);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login", { replace: true });
-  };
+  useEffect(() => {
+    fetchAnalytics();
+  }, [fetchAnalytics]);
 
   const handleSearch = (event) => {
     event.preventDefault();
@@ -75,6 +111,13 @@ const Dashboard = () => {
   const handleDifficultyChange = (event) => {
     setPage(1);
     setDifficulty(event.target.value);
+  };
+
+  const clearFilters = () => {
+    setSearchInput("");
+    setSearch("");
+    setDifficulty("");
+    setPage(1);
   };
 
   const handleDeleteEntry = async (id) => {
@@ -90,8 +133,11 @@ const Dashboard = () => {
     try {
       await deleteEntry(id);
 
-      // If the current page becomes empty, move back one page.
+      // Refresh analytics after a successful deletion.
+      await fetchAnalytics();
+
       if (entries.length === 1 && page > 1) {
+        // Changing the page triggers fetchEntries through useEffect.
         setPage((currentPage) => currentPage - 1);
       } else {
         await fetchEntries();
@@ -106,62 +152,87 @@ const Dashboard = () => {
     }
   };
 
-  const formatDuration = (minutes) => {
-    const safeMinutes = Number(minutes) || 0;
-    const hours = Math.floor(safeMinutes / 60);
-    const remainingMinutes = safeMinutes % 60;
+  const totalStudyMinutes =
+    analytics?.overview?.totalStudyMinutes ?? 0;
 
-    if (hours === 0) return `${remainingMinutes} min`;
-    if (remainingMinutes === 0) return `${hours} hr`;
+  const totalEntries =
+    analytics?.overview?.totalEntries ?? 0;
 
-    return `${hours} hr ${remainingMinutes} min`;
-  };
+  const totalStudyHours =
+    analytics?.overview?.totalStudyHours ?? 0;
 
-  const totalStudyMinutes = entries.reduce(
-    (total, entry) =>
-      total + (Number(entry.studyDurationMinutes) || 0),
+  const weeklyStudySessions = (
+    analytics?.weeklyStudy ?? []
+  ).reduce(
+    (total, day) =>
+      total + (Number(day.entriesCount) || 0),
     0
   );
 
-  const totalEntries =
+  // Prefer filtered pagination totals from the entries API.
+  const filteredTotalEntries =
     pagination?.totalEntries ?? entries.length;
 
   const totalPages =
     pagination?.totalPages ??
-    Math.max(1, Math.ceil(totalEntries / PAGE_SIZE));
+    Math.max(
+      1,
+      Math.ceil(filteredTotalEntries / PAGE_SIZE)
+    );
 
   const firstVisibleEntry =
-    entries.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+    entries.length === 0
+      ? 0
+      : (page - 1) * PAGE_SIZE + 1;
 
   const lastVisibleEntry =
     (page - 1) * PAGE_SIZE + entries.length;
 
+  const analyticsUnavailable =
+    Boolean(analyticsError) || !analytics;
+
+  const analyticsValue = (value) => {
+    if (isAnalyticsLoading || analyticsUnavailable) {
+      return "—";
+    }
+
+    return value;
+  };
+
+  const weeklyStudy = analytics?.weeklyStudy ?? [];
+
+  const difficultyBreakdown = analytics?.difficultyBreakdown ?? {
+    Easy: 0,
+    Medium: 0,
+    Hard: 0,
+  };
+
+  const difficultyTotal =
+    (Number(difficultyBreakdown.Easy) || 0) +
+    (Number(difficultyBreakdown.Medium) || 0) +
+    (Number(difficultyBreakdown.Hard) || 0);
+
+  const maxStudyMinutes = Math.max(
+    1,
+    ...weeklyStudy.map((day) => Number(day.studyMinutes) || 0)
+  );
+
+  const recentEntries = analytics?.recentEntries ?? [];
+
+  const formatDay = (date) => {
+    if (!date) return "—";
+
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) return "—";
+
+    return parsedDate.toLocaleDateString("en-IN", {
+      weekday: "short",
+    });
+  };
+
   return (
     <div className="dashboard-page">
-      <header className="dashboard-header">
-        <a href="/" className="dashboard-logo">
-          Skillora<span>.</span>
-        </a>
-
-        <div className="dashboard-user">
-          <div className="dashboard-avatar">
-            {user?.name?.charAt(0)?.toUpperCase() || "S"}
-          </div>
-
-          <span className="dashboard-user-name">
-            {user?.name || "Student"}
-          </span>
-
-          <button
-            type="button"
-            className="dashboard-logout"
-            onClick={handleLogout}
-          >
-            Log out
-          </button>
-        </div>
-      </header>
-
       <main className="dashboard-main">
         <section className="dashboard-welcome">
           <p className="dashboard-eyebrow">
@@ -170,59 +241,262 @@ const Dashboard = () => {
 
           <h1>
             Welcome back,{" "}
-            <span>{user?.name?.split(" ")[0] || "Learner"}</span>!
+            <span>
+              {user?.name?.trim().split(/\s+/)[0] || "Learner"}
+            </span>
+            !
           </h1>
 
           <p>
-            Keep track of what you learn, reflect on your progress,
-            and build consistent learning habits.
+            Keep track of what you learn, reflect on your
+            progress, and build consistent learning habits.
           </p>
         </section>
 
-        {/* Dashboard statistics */}
+        {analyticsError && (
+          <div
+            className="dashboard-feedback dashboard-feedback-error"
+            role="alert"
+          >
+            <p>{analyticsError}</p>
+
+            <button
+              type="button"
+              disabled={isAnalyticsLoading}
+              onClick={fetchAnalytics}
+            >
+              {isAnalyticsLoading ? "Retrying…" : "Try again"}
+            </button>
+          </div>
+        )}
+
         <section className="dashboard-stats">
           <article className="dashboard-stat-card">
             <span className="dashboard-stat-icon">📚</span>
-            <p>Entries on this page</p>
-            <h2>{isLoading ? "—" : entries.length}</h2>
-            <span>Currently displayed</span>
+            <p>Total learning entries</p>
+
+            <h2>
+              {analyticsValue(totalEntries)}
+            </h2>
+
+            <span>Across your learning journal</span>
           </article>
 
           <article className="dashboard-stat-card">
             <span className="dashboard-stat-icon">⏱️</span>
-            <p>Study time on this page</p>
+            <p>Total study time</p>
+
             <h2>
-              {isLoading ? "—" : formatDuration(totalStudyMinutes)}
+              {analyticsValue(formatDuration(totalStudyMinutes))}
             </h2>
-            <span>Time recorded on this page</span>
+
+            <span>
+              {isAnalyticsLoading
+                ? "Calculating your learning time..."
+                : analyticsUnavailable
+                  ? "Analytics currently unavailable"
+                  : `${totalStudyHours} hours of learning recorded`}
+            </span>
           </article>
 
           <article className="dashboard-stat-card">
-            <span className="dashboard-stat-icon">🗂️</span>
-            <p>Total entries</p>
-            <h2>{isLoading ? "—" : totalEntries}</h2>
-            <span>Across your learning journal</span>
+            <span className="dashboard-stat-icon">🎯</span>
+            <p>Entries this week</p>
+
+            <h2>
+              {analyticsValue(weeklyStudySessions)}
+            </h2>
+
+            <span>Entries recorded in the last 7 days</span>
           </article>
         </section>
 
-        {/* Learning entries */}
+        <section
+          className="dashboard-analytics"
+          aria-label="Learning analytics"
+        >
+          {/* Weekly study activity */}
+          <article className="dashboard-analytics-card">
+            <div className="dashboard-analytics-heading">
+              <h2>Weekly study activity</h2>
+              <p>Study time recorded over the last 7 days.</p>
+            </div>
+
+            {isAnalyticsLoading ? (
+              <p className="dashboard-analytics-empty">
+                Loading weekly activity…
+              </p>
+            ) : analyticsUnavailable ? (
+              <p className="dashboard-analytics-empty">
+                Weekly activity is currently unavailable.
+              </p>
+            ) : weeklyStudy.length === 0 ? (
+              <p className="dashboard-analytics-empty">
+                No weekly study activity available yet.
+              </p>
+            ) : (
+              <div className="dashboard-weekly-chart">
+                {weeklyStudy.map((day, index) => {
+                  const minutes = Number(day.studyMinutes) || 0;
+                  const barHeight =
+                    minutes > 0
+                      ? Math.max(5, (minutes / maxStudyMinutes) * 100)
+                      : 0;
+
+                  return (
+                    <div
+                      className="dashboard-chart-day"
+                      key={day.date || index}
+                      title={`${formatDuration(minutes)} studied`}
+                    >
+                      <span className="dashboard-chart-value">
+                        {minutes > 0 ? formatDuration(minutes) : "0 min"}
+                      </span>
+
+                      <div className="dashboard-chart-track">
+                        <div
+                          className="dashboard-chart-bar"
+                          style={{ height: `${barHeight}%` }}
+                        />
+                      </div>
+
+                      <span className="dashboard-chart-label">
+                        {formatDay(day.date)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </article>
+
+          {/* Difficulty breakdown */}
+          <article className="dashboard-analytics-card">
+            <div className="dashboard-analytics-heading">
+              <h2>Difficulty breakdown</h2>
+              <p>Understand the difficulty of your learning entries.</p>
+            </div>
+
+            {isAnalyticsLoading ? (
+              <p className="dashboard-analytics-empty">
+                Loading difficulty breakdown…
+              </p>
+            ) : analyticsUnavailable ? (
+              <p className="dashboard-analytics-empty">
+                Difficulty breakdown is currently unavailable.
+              </p>
+            ) : difficultyTotal === 0 ? (
+              <p className="dashboard-analytics-empty">
+                Add learning entries to see your breakdown.
+              </p>
+            ) : (
+              <div className="dashboard-difficulty-list">
+                {["Easy", "Medium", "Hard"].map((level) => {
+                  const count =
+                    Number(difficultyBreakdown[level]) || 0;
+
+                  const percentage =
+                    (count / difficultyTotal) * 100;
+
+                  return (
+                    <div
+                      className="dashboard-difficulty-item"
+                      key={level}
+                    >
+                      <div className="dashboard-difficulty-label">
+                        <span>{level}</span>
+                        <strong>
+                          {count} ({Math.round(percentage)}%)
+                        </strong>
+                      </div>
+
+                      <div className="dashboard-difficulty-track">
+                        <div
+                          className="dashboard-difficulty-bar"
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </article>
+
+          {/* Recent learning activity */}
+          <article className="dashboard-analytics-card">
+            <div className="dashboard-analytics-heading">
+              <h2>Recent learning activity</h2>
+              <p>Your latest recorded learning sessions.</p>
+            </div>
+
+            {isAnalyticsLoading ? (
+              <p className="dashboard-analytics-empty">
+                Loading recent activity…
+              </p>
+            ) : analyticsUnavailable ? (
+              <p className="dashboard-analytics-empty">
+                Recent activity is currently unavailable.
+              </p>
+            ) : recentEntries.length === 0 ? (
+              <p className="dashboard-analytics-empty">
+                Your recent learning entries will appear here.
+              </p>
+            ) : (
+              <div className="dashboard-recent-list">
+                {recentEntries.slice(0, 5).map((entry, index) => (
+                  <div
+                    className="dashboard-recent-item"
+                    key={entry._id || entry.id || index}
+                  >
+                    <div>
+                      <h3>{entry.topic || "Untitled entry"}</h3>
+                      <p>
+                        {entry.learningDate
+                          ? new Date(entry.learningDate).toLocaleDateString(
+                            "en-IN",
+                            {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )
+                          : "Date not available"}
+                        {" · "}
+                        {entry.difficulty || "Difficulty not set"}
+                      </p>
+                    </div>
+
+                    <span className="dashboard-recent-duration">
+                      {formatDuration(entry.studyDurationMinutes)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </article>
+        </section>
+
         <section className="dashboard-entries">
           <div className="dashboard-entries-heading">
             <div>
               <h2>Your learning journal</h2>
-              <p>Review, search, and manage your learning entries.</p>
+              <p>
+                Review, search, and manage your learning entries.
+              </p>
             </div>
 
             <button
               type="button"
               className="dashboard-primary-button"
-              onClick={() => navigate("/learning-entries/new")}
+              onClick={() =>
+                navigate("/learning-entries/new")
+              }
             >
               + New entry
             </button>
           </div>
 
-          {/* Search and difficulty filters */}
           <div className="dashboard-filters">
             <form
               className="dashboard-search-form"
@@ -231,7 +505,9 @@ const Dashboard = () => {
               <input
                 type="search"
                 value={searchInput}
-                onChange={(event) => setSearchInput(event.target.value)}
+                onChange={(event) =>
+                  setSearchInput(event.target.value)
+                }
                 placeholder="Search topics or descriptions..."
                 aria-label="Search learning entries"
               />
@@ -257,12 +533,7 @@ const Dashboard = () => {
               <button
                 type="button"
                 className="dashboard-clear-filters"
-                onClick={() => {
-                  setSearchInput("");
-                  setSearch("");
-                  setDifficulty("");
-                  setPage(1);
-                }}
+                onClick={clearFilters}
               >
                 Clear filters
               </button>
@@ -276,11 +547,13 @@ const Dashboard = () => {
             >
               <p>{error}</p>
 
-              {!isLoading && (
-                <button type="button" onClick={fetchEntries}>
-                  Try again
-                </button>
-              )}
+              <button
+                type="button"
+                disabled={isLoading}
+                onClick={fetchEntries}
+              >
+                Try again
+              </button>
             </div>
           )}
 
@@ -310,12 +583,7 @@ const Dashboard = () => {
                 <button
                   type="button"
                   className="dashboard-primary-button"
-                  onClick={() => {
-                    setSearchInput("");
-                    setSearch("");
-                    setDifficulty("");
-                    setPage(1);
-                  }}
+                  onClick={clearFilters}
                 >
                   Clear filters
                 </button>
@@ -323,7 +591,9 @@ const Dashboard = () => {
                 <button
                   type="button"
                   className="dashboard-primary-button"
-                  onClick={() => navigate("/learning-entries/new")}
+                  onClick={() =>
+                    navigate("/learning-entries/new")
+                  }
                 >
                   + Create your first entry
                 </button>
@@ -344,16 +614,18 @@ const Dashboard = () => {
                     >
                       <div className="dashboard-entry-content">
                         <h3>{entry.topic}</h3>
-
                         <p>{entry.description}</p>
 
                         <div className="dashboard-entry-meta">
                           <span>
-                            {entry.difficulty || "Difficulty not set"}
+                            {entry.difficulty ||
+                              "Difficulty not set"}
                           </span>
 
                           <span>
-                            {formatDuration(entry.studyDurationMinutes)}
+                            {formatDuration(
+                              entry.studyDurationMinutes
+                            )}
                           </span>
 
                           {entry.learningDate && (
@@ -373,70 +645,73 @@ const Dashboard = () => {
                           <button
                             type="button"
                             onClick={() =>
-                              navigate(`/learning-entries/${entryId}/edit`)
+                              navigate(
+                                `/learning-entries/${entryId}/edit`
+                              )
                             }
                           >
                             Edit
-                          </button >
+                          </button>
 
                           <button
                             type="button"
                             disabled={deletingId === entryId}
-                            onClick={() => handleDeleteEntry(entryId)}
+                            onClick={() =>
+                              handleDeleteEntry(entryId)
+                            }
                           >
                             {deletingId === entryId
                               ? "Deleting…"
                               : "Delete"}
                           </button>
-                        </div >
-                      </div >
-                    </article >
+                        </div>
+                      </div>
+                    </article>
                   );
                 })}
-              </div >
+              </div>
 
-              {/* Pagination */}
-              {
-                totalPages > 1 && (
-                  <div className="dashboard-pagination">
-                    <p>
-                      Showing {firstVisibleEntry}–{lastVisibleEntry} of{" "}
-                      {totalEntries} entries
-                    </p>
+              {totalPages > 1 && (
+                <div className="dashboard-pagination">
+                  <p>
+                    Showing {firstVisibleEntry}–{lastVisibleEntry} of{" "}
+                    {filteredTotalEntries} entries
+                  </p>
 
-                    <div className="dashboard-pagination-actions">
-                      <button
-                        type="button"
-                        disabled={isLoading || page <= 1}
-                        onClick={() =>
-                          setPage((currentPage) => currentPage - 1)
-                        }
-                      >
-                        Previous
-                      </button>
+                  <div className="dashboard-pagination-actions">
+                    <button
+                      type="button"
+                      disabled={isLoading || page <= 1}
+                      onClick={() =>
+                        setPage((currentPage) => currentPage - 1)
+                      }
+                    >
+                      Previous
+                    </button>
 
-                      <span>
-                        Page {page} of {totalPages}
-                      </span>
+                    <span>
+                      Page {page} of {totalPages}
+                    </span>
 
-                      <button
-                        type="button"
-                        disabled={isLoading || page >= totalPages}
-                        onClick={() =>
-                          setPage((currentPage) => currentPage + 1)
-                        }
-                      >
-                        Next
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      disabled={
+                        isLoading || page >= totalPages
+                      }
+                      onClick={() =>
+                        setPage((currentPage) => currentPage + 1)
+                      }
+                    >
+                      Next
+                    </button>
                   </div>
-                )
-              }
+                </div>
+              )}
             </>
           )}
-        </section >
-      </main >
-    </div >
+        </section>
+      </main>
+    </div>
   );
 };
 
