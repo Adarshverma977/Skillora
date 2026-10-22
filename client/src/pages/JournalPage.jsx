@@ -1,6 +1,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useToast } from "../context/ToastContext";
 import { getEntries, deleteEntry } from "../services/entryService";
 import "./JournalPage.css";
 
@@ -14,6 +15,8 @@ const INITIAL_PAGINATION = {
 };
 
 const JournalPage = () => {
+  const { showToast } = useToast();
+
   const [entries, setEntries] = useState([]);
   const [pagination, setPagination] = useState(INITIAL_PAGINATION);
 
@@ -29,6 +32,7 @@ const JournalPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState(null);
+  const [entryToDelete, setEntryToDelete] = useState(null);
 
   // Debounce search input.
   useEffect(() => {
@@ -108,19 +112,26 @@ const JournalPage = () => {
     setPage(1);
   };
 
-  const handleDelete = async (entry) => {
-    const confirmed = window.confirm(
-      `Delete "${entry.topic}"? This action cannot be undone.`
-    );
+  // Delete entry and show a toast after successful deletion.
+  const handleDelete = async () => {
+    if (!entryToDelete) return;
 
-    if (!confirmed) return;
+    const id = entryToDelete._id || entryToDelete.id;
 
-    const id = entry._id || entry.id;
+    if (!id) {
+      setError("Unable to identify this learning entry.");
+      setEntryToDelete(null);
+      return;
+    }
+
     setDeletingId(id);
     setError("");
 
     try {
       await deleteEntry(id);
+
+      setEntryToDelete(null);
+      showToast("Learning entry deleted successfully!", "success");
 
       if (entries.length === 1 && page > 1) {
         setPage((current) => current - 1);
@@ -128,6 +139,8 @@ const JournalPage = () => {
         await loadEntries();
       }
     } catch (err) {
+      console.error("Delete entry error:", err);
+
       setError(
         err.response?.data?.message ||
         "Unable to delete this entry. Please try again."
@@ -152,8 +165,9 @@ const JournalPage = () => {
   };
 
   const formatDuration = (minutes = 0) => {
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
+    const safeMinutes = Math.max(0, Number(minutes) || 0);
+    const hours = Math.floor(safeMinutes / 60);
+    const remainingMinutes = safeMinutes % 60;
 
     if (hours && remainingMinutes) {
       return `${hours}h ${remainingMinutes}m`;
@@ -186,7 +200,10 @@ const JournalPage = () => {
           </p>
         </div>
 
-        <Link to="/learning-entries/new" className="journal-add-button">
+        <Link
+          to="/learning-entries/new"
+          className="journal-add-button"
+        >
           <span aria-hidden="true">+</span>
           Add entry
         </Link>
@@ -271,7 +288,9 @@ const JournalPage = () => {
           <div className="journal-date-filters-heading">
             <div>
               <h3>Filter by study date</h3>
-              <p>Choose a date range to find specific learning sessions.</p>
+              <p>
+                Choose a date range to find specific learning sessions.
+              </p>
             </div>
 
             {hasDateFilters && (
@@ -443,7 +462,7 @@ const JournalPage = () => {
                               type="button"
                               className="journal-delete-button"
                               disabled={deletingId === id}
-                              onClick={() => handleDelete(entry)}
+                              onClick={() => setEntryToDelete(entry)}
                               aria-label={`Delete ${entry.topic}`}
                             >
                               {deletingId === id ? "Deleting..." : "Delete"}
@@ -498,7 +517,7 @@ const JournalPage = () => {
                       <button
                         type="button"
                         disabled={deletingId === id}
-                        onClick={() => handleDelete(entry)}
+                        onClick={() => setEntryToDelete(entry)}
                       >
                         {deletingId === id ? "Deleting..." : "Delete"}
                       </button>
@@ -535,6 +554,55 @@ const JournalPage = () => {
           </>
         )}
       </section>
+      {entryToDelete && (
+        <div
+          className="journal-modal-backdrop"
+          onClick={() => {
+            if (!deletingId) setEntryToDelete(null);
+          }}
+        >
+          <section
+            className="journal-confirm-modal"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-modal-title"
+            aria-describedby="delete-modal-description"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="journal-confirm-icon" aria-hidden="true">
+              !
+            </div>
+
+            <h2 id="delete-modal-title">Delete learning entry?</h2>
+
+            <p id="delete-modal-description">
+              Are you sure you want to delete{" "}
+              <strong>"{entryToDelete.topic}"</strong>?
+              This action cannot be undone.
+            </p>
+
+            <div className="journal-confirm-actions">
+              <button
+                type="button"
+                className="journal-cancel-button"
+                disabled={deletingId !== null}
+                onClick={() => setEntryToDelete(null)}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="journal-confirm-delete-button"
+                disabled={deletingId !== null}
+                onClick={handleDelete}
+              >
+                {deletingId !== null ? "Deleting..." : "Confirm Delete"}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   );
 };

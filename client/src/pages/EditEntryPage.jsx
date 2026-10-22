@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useToast } from "../context/ToastContext";
 import {
   getEntryById,
   updateEntry,
@@ -10,6 +11,7 @@ import "./EditEntryPage.css";
 const EditEntryPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const [form, setForm] = useState(null);
   const [error, setError] = useState("");
@@ -105,6 +107,8 @@ const EditEntryPage = () => {
         difficulty: form.difficulty,
         learningDate: form.learningDate,
       });
+
+      showToast("Learning entry updated successfully!", "success");
 
       // Return to My Journal after a successful update.
       navigate("/journal", {

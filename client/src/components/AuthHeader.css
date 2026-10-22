@@ -1,15 +1,20 @@
-
+/* Skillora Auth Header — CSS-only visual refinement */
 .auth-header {
-  position: relative;
-  z-index: 10;
+  position: sticky;
+  top: 0;
+  z-index: 30;
   width: 100%;
-  border-bottom: 1px solid var(--border-color, #342544);
-  background: var(--bg-primary, #100d1b);
+  border-bottom: 1px solid var(--border, #e8e5ef);
+  background: color-mix(in srgb, var(--bg, #ffffff) 88%, transparent);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 4px 24px rgb(20 16 40 / 3%);
+  transition: background var(--transition, 180ms ease), border-color var(--transition, 180ms ease);
 }
 
 .auth-header-inner {
-  width: min(100% - 40px, 1400px);
-  min-height: 88px;
+  width: min(100% - 48px, 1320px);
+  min-height: 82px;
   margin-inline: auto;
   display: flex;
   align-items: center;
@@ -17,9 +22,42 @@
   gap: 24px;
 }
 
+.auth-header .theme-toggle {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  box-shadow: var(--shadow-sm, 0 2px 8px rgb(20 16 40 / 5%));
+}
+
+.auth-header .theme-toggle:focus-visible {
+  outline: 3px solid var(--primary, #8b5cf6);
+  outline-offset: 3px;
+}
+
+@media (max-width: 768px) {
+  .auth-header-inner {
+    width: calc(100% - 36px);
+    min-height: 74px;
+    gap: 16px;
+  }
+}
+
 @media (max-width: 480px) {
   .auth-header-inner {
-    width: calc(100% - 32px);
-    min-height: 72px;
+    width: calc(100% - 28px);
+    min-height: 68px;
+  }
+
+  .auth-header .theme-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-header,
+  .auth-header .theme-toggle {
+    transition: none;
   }
 }

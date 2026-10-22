@@ -1,6 +1,11 @@
 
 import { useState } from "react";
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  NavLink,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import {
   BookOpen,
   ChartNoAxesCombined,
@@ -20,34 +25,14 @@ import ThemeToggle from "../components/ThemeToggle";
 import "./MainLayout.css";
 
 const navigationItems = [
-  {
-    label: "Dashboard",
-    path: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    label: "My Journal",
-    path: "/journal",
-    icon: BookOpen,
-  },
-  {
-    label: "Search & Filter",
-    path: "/search",
-    icon: Search,
-  },
+  { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+  { label: "My Journal", path: "/journal", icon: BookOpen },
+  { label: "Search & Filter", path: "/search", icon: Search },
 ];
 
 const accountItems = [
-  {
-    label: "My Profile",
-    path: "/profile",
-    icon: UserRound,
-  },
-  {
-    label: "Settings",
-    path: "/settings",
-    icon: Settings,
-  },
+  { label: "My Profile", path: "/profile", icon: UserRound },
+  { label: "Settings", path: "/settings", icon: Settings },
 ];
 
 const getInitials = (name = "") =>
@@ -59,14 +44,19 @@ const getInitials = (name = "") =>
     .join("")
     .toUpperCase() || "S";
 
-const MainLayout = () => {
+export default function MainLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
+
+  const isActivePath = (path) =>
+    location.pathname === path ||
+    location.pathname.startsWith(`${path}/`);
 
   const handleLogout = () => {
     logout();
@@ -74,9 +64,16 @@ const MainLayout = () => {
     navigate("/login", { replace: true });
   };
 
-  const isActivePath = (path) =>
-    location.pathname === path ||
-    location.pathname.startsWith(`${path}/`);
+  const handleSearch = (event) => {
+    event.preventDefault();
+
+    const query = searchValue.trim();
+
+    if (!query) return;
+
+    navigate(`/search?q=${encodeURIComponent(query)}`);
+    closeMobileMenu();
+  };
 
   const renderNavigation = (items) =>
     items.map(({ label, path, icon: Icon }) => (
@@ -85,13 +82,19 @@ const MainLayout = () => {
         to={path}
         onClick={closeMobileMenu}
         className={({ isActive }) =>
-          `main-layout__nav-link${isActive || isActivePath(path) ? " is-active" : ""}`
+          `main-layout__nav-link${isActive || isActivePath(path) ? " is-active" : ""
+          }`
         }
       >
         <Icon size={19} strokeWidth={1.8} />
         <span>{label}</span>
       </NavLink>
     ));
+
+  const activePage =
+    [...navigationItems, ...accountItems].find((item) =>
+      isActivePath(item.path)
+    )?.label || "Learning space";
 
   return (
     <div className="main-layout">
@@ -105,38 +108,40 @@ const MainLayout = () => {
       )}
 
       <aside
-        className={`main-layout__sidebar${mobileMenuOpen ? " is-open" : ""}`}
+        id="skillora-sidebar"
+        className={`main-layout__sidebar${mobileMenuOpen ? " is-open" : ""
+          }`}
+        aria-label="Main navigation"
       >
-        <NavLink
-          to="/dashboard"
-          className="main-layout__brand"
-          onClick={closeMobileMenu}
-        >
-          <span className="main-layout__brand-icon">
-            <Command size={22} />
-          </span>
+        <div className="main-layout__brand-row">
+          <NavLink
+            to="/dashboard"
+            className="main-layout__brand"
+            onClick={closeMobileMenu}
+          >
+            <span className="main-layout__brand-icon">
+              <Command size={23} strokeWidth={2} />
+            </span>
 
-          <span>
-            <strong>LearnLog</strong>
-            <small>YOUR LEARNING SPACE</small>
-          </span>
+            <span className="main-layout__brand-copy">
+              <strong>Skillora</strong>
+              <small>YOUR LEARNING SPACE</small>
+            </span>
+          </NavLink>
 
           <button
             type="button"
             className="main-layout__mobile-close"
             aria-label="Close navigation"
-            onClick={(event) => {
-              event.preventDefault();
-              closeMobileMenu();
-            }}
+            onClick={closeMobileMenu}
           >
             <X size={20} />
           </button>
-        </NavLink>
+        </div>
 
         <div className="main-layout__workspace">
           <span className="main-layout__workspace-dot" />
-          Student workspace
+          <span>Student workspace</span>
           <ChevronDown size={15} />
         </div>
 
@@ -160,7 +165,9 @@ const MainLayout = () => {
               <ChartNoAxesCombined size={20} />
             </div>
             <strong>Small steps, big growth.</strong>
-            <p>Keep showing up. Your progress adds up every day.</p>
+            <p>
+              Keep showing up. Your progress adds up every day.
+            </p>
           </div>
 
           <button
@@ -179,41 +186,44 @@ const MainLayout = () => {
           <button
             type="button"
             className="main-layout__menu-button"
-            aria-label="Open navigation menu"
+            aria-label="Toggle navigation menu"
+            aria-controls="skillora-sidebar"
             aria-expanded={mobileMenuOpen}
             onClick={() => setMobileMenuOpen((open) => !open)}
           >
-            <Menu size={22} />
+            {mobileMenuOpen ? <X size={21} /> : <Menu size={21} />}
           </button>
 
           <div className="main-layout__breadcrumb">
-            <span>LearnLog</span>
+            <span>Skillora</span>
             <span className="main-layout__breadcrumb-divider">/</span>
-            <strong>
-              {[...navigationItems, ...accountItems].find(
-                (item) => isActivePath(item.path)
-              )?.label || "Learning space"}
-            </strong>
+            <strong>{activePage}</strong>
           </div>
 
           <div className="main-layout__topbar-actions">
-            <label className="main-layout__search">
-              <Search size={17} />
+            <form
+              className="main-layout__search"
+              role="search"
+              onSubmit={handleSearch}
+            >
+              <Search size={18} aria-hidden="true" />
+
               <input
                 type="search"
-                placeholder="Search anything..."
-                aria-label="Search anything"
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" && event.currentTarget.value.trim()) {
-                    navigate(
-                      `/search?q=${encodeURIComponent(event.currentTarget.value.trim())}`
-                    );
-                    closeMobileMenu();
-                  }
-                }}
+                placeholder="Search your learning journal..."
+                aria-label="Search learning journal"
+                value={searchValue}
+                onChange={(event) => setSearchValue(event.target.value)}
               />
-              <kbd>↵</kbd>
-            </label>
+
+              <button
+                type="submit"
+                className="main-layout__search-submit"
+                aria-label="Submit search"
+              >
+                <span>↵</span>
+              </button>
+            </form>
 
             <ThemeToggle />
 
@@ -226,7 +236,7 @@ const MainLayout = () => {
                 <img
                   className="main-layout__avatar"
                   src={user.profilePhoto}
-                  alt={user.name || "Profile"}
+                  alt=""
                 />
               ) : (
                 <span className="main-layout__avatar main-layout__avatar--fallback">
@@ -250,6 +260,4 @@ const MainLayout = () => {
       </div>
     </div>
   );
-};
-
-export default MainLayout;
+}

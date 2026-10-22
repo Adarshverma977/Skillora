@@ -2,12 +2,16 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { deleteEntry, getEntryById } from "../services/entryService";
+import { useToast } from "../context/ToastContext";
 import "./EntryDetailsPage.css";
 
 const EntryDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const { showToast } = useToast();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  
   const [entry, setEntry] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -89,17 +93,13 @@ const EntryDetailsPage = () => {
   };
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(
-      `Delete "${entry.topic}"? This action cannot be undone.`
-    );
-
-    if (!confirmed) return;
-
     setDeleting(true);
     setError("");
 
     try {
       await deleteEntry(entry._id || entry.id);
+
+      showToast("Learning entry deleted successfully!", "success");
       navigate("/journal", { replace: true });
     } catch (err) {
       setError(
@@ -107,6 +107,7 @@ const EntryDetailsPage = () => {
         "Unable to delete this entry. Please try again."
       );
       setDeleting(false);
+      setShowDeleteModal(false);
     }
   };
 
@@ -183,7 +184,7 @@ const EntryDetailsPage = () => {
           <button
             type="button"
             className="entry-danger-button"
-            onClick={handleDelete}
+            onClick={() => setShowDeleteModal(true)}
             disabled={deleting}
           >
             {deleting ? "Deleting..." : "Delete"}
@@ -268,6 +269,55 @@ const EntryDetailsPage = () => {
           Edit this entry
         </Link>
       </div>
+      {showDeleteModal && (
+        <div
+          className="entry-modal-overlay"
+          onClick={(event) => {
+            if (event.target === event.currentTarget && !deleting) {
+              setShowDeleteModal(false);
+            }
+          }}
+        >
+          <section
+            className="entry-delete-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="entry-delete-title"
+            aria-describedby="entry-delete-description"
+          >
+            <div className="entry-delete-modal-icon" aria-hidden="true">
+              !
+            </div>
+
+            <h2 id="entry-delete-title">Delete learning entry?</h2>
+
+            <p id="entry-delete-description">
+              Are you sure you want to delete{" "}
+              <strong>{entry.topic}</strong>? This action cannot be undone.
+            </p>
+
+            <div className="entry-delete-modal-actions">
+              <button
+                type="button"
+                className="entry-modal-cancel-button"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deleting}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="entry-modal-confirm-button"
+                onClick={handleDelete}
+                disabled={deleting}
+              >
+                {deleting ? "Deleting..." : "Yes, delete"}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   );
 };

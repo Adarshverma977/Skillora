@@ -76,3 +76,88 @@
   border-radius: var(--radius-md);
   font-size: 14px;
 }
+
+/* Skillora Button — visual polish only; component API and behavior unchanged. */
+.btn {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  font-family: inherit;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.btn:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 38%, transparent);
+  outline-offset: 3px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 76%, #a855f7));
+  box-shadow: 0 5px 14px color-mix(in srgb, var(--primary) 22%, transparent);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--primary-hover), color-mix(in srgb, var(--primary-hover) 78%, #9333ea));
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--primary) 27%, transparent);
+  transform: translateY(-2px);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0) scale(0.985);
+  box-shadow: 0 3px 8px color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
+.btn-secondary {
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  border-color: transparent;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  box-shadow: none;
+  transform: none;
+  opacity: 0.52;
+}
+
+.btn-small {
+  min-height: 36px;
+  padding: 8px 14px;
+  border-radius: max(8px, calc(var(--radius-md) - 3px));
+  font-size: 12px;
+}
+
+.btn-medium {
+  min-height: 44px;
+  padding: 11px 20px;
+  font-size: 13px;
+}
+
+.btn-large {
+  min-height: 52px;
+  padding: 14px 26px;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .btn:hover:not(:disabled),
+  .btn:active:not(:disabled) {
+    transition: none;
+    transform: none;
+  }
+}

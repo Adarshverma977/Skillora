@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "../context/ToastContext";
 import { createEntry } from "../services/entryService";
 import "./CreateEntryPage.css";
 
@@ -14,6 +15,8 @@ const initialForm = {
 
 const CreateEntryPage = () => {
   const navigate = useNavigate();
+  const { showToast } = useToast();
+
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,7 +38,9 @@ const CreateEntryPage = () => {
     const duration = Number(form.studyDurationMinutes);
 
     if (!Number.isInteger(duration) || duration <= 0) {
-      setError("Study duration must be a positive whole number of minutes.");
+      setError(
+        "Study duration must be a positive whole number of minutes."
+      );
       return;
     }
 
@@ -49,6 +54,8 @@ const CreateEntryPage = () => {
         difficulty: form.difficulty,
         learningDate: form.learningDate,
       });
+
+      showToast("Learning entry created successfully!", "success");
 
       navigate("/dashboard", {
         replace: true,

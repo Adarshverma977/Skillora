@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useToast } from "../context/ToastContext";
 import {
   ArrowLeft,
   ArrowRight,
@@ -25,6 +26,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { showToast } = useToast();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -73,6 +75,8 @@ const LoginPage = () => {
         token: response.data.token,
         user: response.data.user,
       });
+
+      showToast("Login successful! Welcome back to Skillora.", "success");
 
       navigate("/");
     } catch (err) {

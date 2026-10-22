@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 import {
   Eye,
   EyeOff,
@@ -8,7 +9,6 @@ import {
   Mail,
   LockKeyhole,
   ArrowRight,
-  CheckCircle2,
   LoaderCircle,
 } from 'lucide-react';
 
@@ -18,6 +18,8 @@ import { registerUser } from '../services/authService';
 import './RegisterPage.css';
 
 const RegisterPage = () => {
+  const { showToast } = useToast();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -30,7 +32,6 @@ const RegisterPage = () => {
     useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -40,14 +41,14 @@ const RegisterPage = () => {
       [name]: value,
     }));
 
-    setError('');
-    setSuccessMessage('');
+    if (error) {
+      setError('');
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
-    setSuccessMessage('');
 
     const name = formData.name.trim();
     const email = formData.email.trim();
@@ -84,9 +85,10 @@ const RegisterPage = () => {
         password: formData.password,
       });
 
-      setSuccessMessage(
-        result.message ||
-        'Registration successful. Please check your email for verification instructions.'
+      showToast(
+        result?.message ||
+        'Registration successful. Please check your email for verification instructions.',
+        'success',
       );
 
       setFormData({
@@ -102,14 +104,15 @@ const RegisterPage = () => {
         setError(response.data.message);
       } else if (response?.data?.errors) {
         const errors = response.data.errors;
+
         setError(
           Array.isArray(errors)
             ? errors.map((item) => item.message).join(' ')
-            : 'Please check the information you entered.'
+            : 'Please check the information you entered.',
         );
       } else if (err.request) {
         setError(
-          'Unable to connect to Skillora. Please check that the server is running.'
+          'Unable to connect to Skillora. Please check that the server is running.',
         );
       } else {
         setError('Something went wrong. Please try again.');
@@ -131,7 +134,9 @@ const RegisterPage = () => {
 
       <section className="register-card">
         <div className="register-heading">
-          <span className="register-eyebrow">START YOUR JOURNEY</span>
+          <span className="register-eyebrow">
+            START YOUR JOURNEY
+          </span>
 
           <h1>Create your account</h1>
 
@@ -142,18 +147,11 @@ const RegisterPage = () => {
         </div>
 
         {error && (
-          <div className="register-alert register-alert-error" role="alert">
-            {error}
-          </div>
-        )}
-
-        {successMessage && (
           <div
-            className="register-alert register-alert-success"
-            role="status"
+            className="register-alert register-alert-error"
+            role="alert"
           >
-            <CheckCircle2 size={20} />
-            <span>{successMessage}</span>
+            {error}
           </div>
         )}
 
@@ -223,11 +221,19 @@ const RegisterPage = () => {
               <button
                 type="button"
                 className="register-password-toggle"
-                onClick={() => setShowPassword((value) => !value)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                onClick={() =>
+                  setShowPassword((value) => !value)
+                }
+                aria-label={
+                  showPassword ? 'Hide password' : 'Show password'
+                }
                 disabled={isSubmitting}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
               </button>
             </div>
 
@@ -237,7 +243,9 @@ const RegisterPage = () => {
           </div>
 
           <div className="register-field">
-            <label htmlFor="confirmPassword">Confirm password</label>
+            <label htmlFor="confirmPassword">
+              Confirm password
+            </label>
 
             <div className="register-input-wrap">
               <LockKeyhole size={19} aria-hidden="true" />
@@ -245,7 +253,9 @@ const RegisterPage = () => {
               <input
                 id="confirmPassword"
                 name="confirmPassword"
-                type={showConfirmPassword ? 'text' : 'password'}
+                type={
+                  showConfirmPassword ? 'text' : 'password'
+                }
                 placeholder="Enter your password again"
                 value={formData.confirmPassword}
                 onChange={handleChange}
@@ -283,7 +293,10 @@ const RegisterPage = () => {
           >
             {isSubmitting ? (
               <>
-                <LoaderCircle className="register-spinner" size={19} />
+                <LoaderCircle
+                  className="register-spinner"
+                  size={19}
+                />
                 Creating account...
               </>
             ) : (
@@ -296,7 +309,8 @@ const RegisterPage = () => {
         </form>
 
         <p className="register-login-prompt">
-          Already have an account? <Link to="/login">Log in</Link>
+          Already have an account?{' '}
+          <Link to="/login">Log in</Link>
         </p>
       </section>
 
