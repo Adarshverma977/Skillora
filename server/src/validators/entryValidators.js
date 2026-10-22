@@ -59,7 +59,19 @@ const updateEntrySchema = z
     message: "Provide at least one field to update",
   });
 
-  const getEntriesQuerySchema = z.object({
+const dateStringSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must use YYYY-MM-DD format")
+  .refine((value) => {
+    const date = new Date(`${value}T00:00:00.000Z`);
+
+    return (
+      !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value
+    );
+  }, "Invalid calendar date");
+
+const getEntriesQuerySchema = z
+  .object({
     page: z.coerce.number().int().min(1).default(1),
 
     limit: z.coerce.number().int().min(1).max(100).default(10),
@@ -69,7 +81,24 @@ const updateEntrySchema = z
     difficulty: z.enum(["Easy", "Medium", "Hard"]).optional(),
 
     sort: z.enum(["newest", "oldest"]).default("newest"),
-  });
+
+    fromDate: dateStringSchema.optional(),
+
+    toDate: dateStringSchema.optional(),
+  })
+  .refine(
+    ({ fromDate, toDate }) => {
+      if (!fromDate || !toDate) {
+        return true;
+      }
+
+      return fromDate <= toDate;
+    },
+    {
+      message: "fromDate cannot be later than toDate",
+      path: ["toDate"],
+    },
+  );
 
 module.exports = {
   createEntrySchema,

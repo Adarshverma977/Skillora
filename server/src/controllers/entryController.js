@@ -34,19 +34,19 @@ const createEntry = asyncHandler(async (req, res) => {
 });
 
 const getEntries = asyncHandler(async (req, res) => {
-  const { page, limit, search, difficulty, sort } = req.query;
+  const { page, limit, search, difficulty, sort, fromDate, toDate } = req.query;
 
-  // 1. Logged-in user ki entries only
+  // 1. Only fetch the logged-in user's entries.
   const filter = {
     user: req.user._id,
   };
 
-  // 2. Difficulty filter
+  // 2. Filter by difficulty.
   if (difficulty) {
     filter.difficulty = difficulty;
   }
 
-  // 3. Search in topic and description
+  // 3. Search in topic and description.
   if (search) {
     const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -56,18 +56,53 @@ const getEntries = asyncHandler(async (req, res) => {
     ];
   }
 
-  // 4. Pagination
+  // 4. Filter by learning date.
+  if (fromDate || toDate) {
+    const dateFilter = {};
+
+    if (fromDate) {
+      const startDate = new Date(`${fromDate}T00:00:00.000Z`);
+
+      if (
+        Number.isNaN(startDate.getTime()) ||
+        startDate.toISOString().slice(0, 10) !== fromDate
+      ) {
+        throw new AppError("Invalid fromDate value.", 400);
+      }
+
+      dateFilter.$gte = startDate;
+    }
+
+    if (toDate) {
+      const endDate = new Date(`${toDate}T00:00:00.000Z`);
+
+      if (
+        Number.isNaN(endDate.getTime()) ||
+        endDate.toISOString().slice(0, 10) !== toDate
+      ) {
+        throw new AppError("Invalid toDate value.", 400);
+      }
+
+      // Exclusive upper boundary includes the entire end date.
+      endDate.setUTCDate(endDate.getUTCDate() + 1);
+      dateFilter.$lt = endDate;
+    }
+
+    filter.learningDate = dateFilter;
+  }
+
+  // 5. Pagination.
   const currentPage = Number(page);
   const pageSize = Number(limit);
   const skip = (currentPage - 1) * pageSize;
 
-  // 5. Sorting
+  // 6. Sorting.
   const sortOrder =
     sort === "oldest"
       ? { learningDate: 1, createdAt: 1 }
       : { learningDate: -1, createdAt: -1 };
 
-  // 6. Fetch entries and total count
+  // 7. Fetch entries and count using the same combined filter.
   const [entries, totalEntries] = await Promise.all([
     LearningEntry.find(filter)
       .sort(sortOrder)
@@ -80,7 +115,7 @@ const getEntries = asyncHandler(async (req, res) => {
 
   const totalPages = Math.ceil(totalEntries / pageSize);
 
-  // 7. Response
+  // 8. Response.
   res.status(200).json({
     success: true,
     message: "Learning entries fetched successfully.",
@@ -99,10 +134,11 @@ const getEntries = asyncHandler(async (req, res) => {
   });
 });
 
+
 const getEntryAnalytics = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
-  // Use the server's local calendar date for the 7-day window.
+  // Calculate the last 7 calendar days.
   const today = new Date();
   today.setHours(23, 59, 59, 999);
 
@@ -112,14 +148,31 @@ const getEntryAnalytics = asyncHandler(async (req, res) => {
 
   const [overall, difficultyCounts, weeklyData, recentEntries] =
     await Promise.all([
-      // Overall statistics for this user.
+      // Overall statistics and normalized unique topics.
       LearningEntry.aggregate([
         { $match: { user: userId } },
         {
           $group: {
             _id: null,
             totalEntries: { $sum: 1 },
-            totalStudyMinutes: { $sum: "$studyDurationMinutes" },
+            totalStudyMinutes: {
+              $sum: "$studyDurationMinutes",
+            },
+            uniqueTopics: {
+              $addToSet: {
+                $toLower: {
+                  $trim: { input: "$topic" },
+                },
+              },
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            totalEntries: 1,
+            totalStudyMinutes: 1,
+            uniqueTopicsCount: { $size: "$uniqueTopics" },
           },
         },
       ]),
@@ -140,7 +193,10 @@ const getEntryAnalytics = asyncHandler(async (req, res) => {
         {
           $match: {
             user: userId,
-            learningDate: { $gte: startDate, $lte: today },
+            learningDate: {
+              $gte: startDate,
+              $lte: today,
+            },
           },
         },
         {
@@ -151,7 +207,9 @@ const getEntryAnalytics = asyncHandler(async (req, res) => {
                 date: "$learningDate",
               },
             },
-            studyMinutes: { $sum: "$studyDurationMinutes" },
+            studyMinutes: {
+              $sum: "$studyDurationMinutes",
+            },
             entriesCount: { $sum: 1 },
           },
         },
@@ -166,7 +224,7 @@ const getEntryAnalytics = asyncHandler(async (req, res) => {
         .lean(),
     ]);
 
-  // Fill dates with no study entries with zero minutes.
+  // Fill days without entries with zero values.
   const weeklyStudy = [];
   const weeklyMap = new Map(weeklyData.map((item) => [item._id, item]));
 
@@ -192,7 +250,16 @@ const getEntryAnalytics = asyncHandler(async (req, res) => {
   const stats = overall[0] || {
     totalEntries: 0,
     totalStudyMinutes: 0,
+    uniqueTopicsCount: 0,
   };
+
+  const totalEntries = stats.totalEntries;
+  const totalStudyMinutes = stats.totalStudyMinutes;
+
+  const averageSessionMinutes =
+    totalEntries > 0
+      ? Number((totalStudyMinutes / totalEntries).toFixed(2))
+      : 0;
 
   const difficultyBreakdown = {
     Easy: 0,
@@ -211,9 +278,11 @@ const getEntryAnalytics = asyncHandler(async (req, res) => {
     message: "Learning analytics fetched successfully.",
     data: {
       overview: {
-        totalEntries: stats.totalEntries,
-        totalStudyMinutes: stats.totalStudyMinutes,
-        totalStudyHours: Number((stats.totalStudyMinutes / 60).toFixed(2)),
+        totalEntries,
+        totalStudyMinutes,
+        totalStudyHours: Number((totalStudyMinutes / 60).toFixed(2)),
+        averageSessionMinutes,
+        uniqueTopics: stats.uniqueTopicsCount,
       },
       difficultyBreakdown,
       weeklyStudy,
@@ -221,6 +290,7 @@ const getEntryAnalytics = asyncHandler(async (req, res) => {
     },
   });
 });
+
 
 const getEntryById = asyncHandler(async (req, res) => {
   const entry = await LearningEntry.findOne({
