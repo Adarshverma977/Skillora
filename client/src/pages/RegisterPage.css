@@ -461,3 +461,168 @@
     transition: none;
   }
 }
+
+/* ========================================
+   SKILLORA REGISTER — POLISH OVERRIDES
+   Styling only; existing JSX and behavior remain unchanged.
+======================================== */
+.register-page {
+  padding-bottom: 28px;
+  background-color: var(--bg);
+}
+
+.register-header {
+  min-height: 78px;
+  box-shadow: 0 4px 24px rgba(35, 25, 55, 0.025);
+}
+
+.register-card {
+  max-width: 500px;
+  margin-top: 42px;
+  padding: 40px 42px 32px;
+  border-radius: 26px;
+  border-color: color-mix(in srgb, var(--border) 82%, var(--primary) 18%);
+  box-shadow: 0 24px 70px rgba(48, 31, 76, 0.075), 0 3px 12px rgba(48, 31, 76, 0.025);
+}
+
+.register-heading {
+  margin-bottom: 28px;
+}
+
+.register-heading h1 {
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+
+.register-eyebrow {
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+
+.register-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 19px;
+}
+
+.register-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.register-field label {
+  font-size: 12px;
+  letter-spacing: 0.015em;
+}
+
+.register-input-wrap {
+  min-height: 54px;
+  padding-inline: 16px;
+  border-radius: 13px;
+  border-color: var(--border-strong);
+  background: var(--surface-secondary);
+}
+
+.register-input-wrap:focus-within {
+  background: var(--surface);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-soft);
+}
+
+.register-input-wrap input {
+  height: 52px;
+  font-size: 13px;
+}
+
+.register-input-wrap input::placeholder {
+  opacity: 0.78;
+}
+
+.register-password-toggle {
+  width: 36px;
+  height: 36px;
+  border: 1px solid transparent;
+}
+
+.register-password-toggle:focus-visible,
+.register-submit:focus-visible,
+.register-login-prompt a:focus-visible {
+  outline: 3px solid var(--primary-soft);
+  outline-offset: 3px;
+}
+
+.register-field-hint {
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.register-alert {
+  padding: 13px 15px;
+  border-radius: 13px;
+  font-size: 12px;
+}
+
+.register-submit {
+  min-height: 54px;
+  margin-top: 2px;
+  border-radius: 13px;
+  background: linear-gradient(115deg, var(--primary), var(--primary-hover));
+  box-shadow: 0 8px 22px var(--primary-glow);
+  font-size: 13px;
+  letter-spacing: 0.01em;
+}
+
+.register-submit:hover:not(:disabled) {
+  box-shadow: 0 12px 28px var(--primary-glow);
+}
+
+.register-login-prompt {
+  margin-top: 25px;
+  padding-top: 23px;
+  line-height: 1.7;
+}
+
+.register-login-prompt a {
+  text-underline-offset: 3px;
+}
+
+[data-theme='dark'] .register-card {
+  border-color: color-mix(in srgb, var(--border) 75%, var(--primary) 25%);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+[data-theme='dark'] .register-input-wrap {
+  background: var(--surface-secondary);
+  border-color: var(--border-strong);
+}
+
+[data-theme='dark'] .register-input-wrap:focus-within {
+  background: var(--surface);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-soft);
+}
+
+@media (max-width: 600px) {
+  .register-card {
+    margin-top: 28px;
+    padding: 30px 23px 25px;
+    border-radius: 22px;
+  }
+
+  .register-card form {
+    gap: 17px;
+  }
+}
+
+@media (max-width: 360px) {
+  .register-card {
+    padding-inline: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .register-card {
+    animation: none;
+  }
+}

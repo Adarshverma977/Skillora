@@ -1,110 +1,118 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
 
 :root {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   color-scheme: light;
 
-  /* Brand */
-  --primary: #8052dc;
-  --primary-hover: #7040ca;
-  --primary-soft: #ebe3fa;
-  --secondary: #d957a5;
-  --accent: #a58ae5;
+  /* Skillora Pop Studio palette */
+  --primary: #6c3bff;
+  --primary-hover: #5527df;
+  --primary-soft: #eee7ff;
 
-  /* Backgrounds - Soft Lavender Light Theme */
-  --bg: #f3effa;
-  --surface: #faf8fd;
-  --surface-secondary: #eee7f7;
-  --surface-hover: #e8def5;
+  --secondary: #ff4f87;
+  --accent: #ff9b38;
+  --teal: #19bfa5;
+  --blue: #3977f6;
+  --yellow: #ffd84d;
+  --pink: #f8bbd0;
+  --plum: #30204d;
 
-  /* Text */
-  --text-primary: #302344;
-  --text-secondary: #756782;
-  --text-muted: #9385a5;
+  /* Light theme */
+  --bg: #f5f0ff;
+  --bg-gradient: linear-gradient(
+    135deg,
+    #f5f0ff 0%,
+    #eee8ff 48%,
+    #fff0f5 100%
+  );
 
-  /* Borders and Effects */
-  --border: #e2d8ef;
-  --border-strong: #cfc0e4;
+  --surface: #fffaf7;
+  --surface-secondary: #f0e8ff;
+  --surface-hover: #e8ddff;
 
-  --shadow-sm: 0 4px 16px rgba(65, 35, 110, 0.045);
-  --shadow-md: 0 12px 35px rgba(65, 35, 110, 0.075);
-  --shadow-lg: 0 24px 65px rgba(65, 35, 110, 0.10);
-  --primary-glow: 0 8px 24px rgba(128, 82, 220, 0.19);
+  --text-primary: #302044;
+  --text-secondary: #655477;
+  --text-muted: #897b9c;
+
+  --border: #e2d5f4;
+  --border-strong: #c8b2ed;
+
+  --shadow-sm: 0 4px 14px rgba(62, 36, 105, 0.06);
+  --shadow-md: 0 12px 30px rgba(62, 36, 105, 0.09);
+  --shadow-lg: 0 22px 55px rgba(62, 36, 105, 0.13);
+  --primary-glow: 0 8px 24px rgba(108, 59, 255, 0.2);
 
   /* Status */
-  --success: #15803d;
-  --success-soft: #e2f3e7;
+  --success: #137d59;
+  --success-soft: #d9f5e8;
+  --warning: #92550b;
+  --warning-soft: #fff0cb;
+  --danger: #bd3154;
+  --danger-soft: #ffe2e9;
 
-  --warning: #a16207;
-  --warning-soft: #fbf0d5;
-
-  --danger: #be3455;
-  --danger-soft: #fbe6eb;
-
-  /* Layout */
-  --container-width: 1200px;
+  /* Shared sizing */
+  --container-width: 1380px;
   --header-height: 76px;
 
-  --radius-sm: 8px;
+  --radius-sm: 9px;
   --radius-md: 14px;
   --radius-lg: 20px;
-  --radius-xl: 28px;
+  --radius-xl: 26px;
   --radius-pill: 999px;
 
-  /* Motion */
   --transition: 180ms ease;
 }
 
-/* ========================================
-   DARK THEME
-======================================== */
-
-[data-theme='dark'] {
+/* Dark theme */
+[data-theme="dark"] {
   color-scheme: dark;
 
-  /* Brand */
-  --primary: #a78bfa;
-  --primary-hover: #c4b5fd;
-  --primary-soft: #30234d;
-  --secondary: #f472b6;
-  --accent: #c4b5fd;
+  --primary: #b49aff;
+  --primary-hover: #c9b7ff;
+  --primary-soft: #352650;
 
-  /* Backgrounds */
-  --bg: #100d1b;
-  --surface: #191428;
-  --surface-secondary: #211a32;
-  --surface-hover: #2a2140;
+  --secondary: #ff8bc4;
+  --accent: #ffb98c;
+  --teal: #5edac0;
+  --blue: #83baff;
+  --yellow: #f8d77f;
+  --pink: #f5a5cc;
+  --plum: #30204d;
 
-  /* Text */
-  --text-primary: #f5f0ff;
-  --text-secondary: #b7abc9;
-  --text-muted: #a397b5;
+  --bg: #151020;
+  --bg-gradient: linear-gradient(
+    135deg,
+    #171126 0%,
+    #211630 55%,
+    #29192c 100%
+  );
 
-  /* Borders and Effects */
-  --border: #302641;
-  --border-strong: #49365f;
+  --surface: #21192e;
+  --surface-secondary: #2c2040;
+  --surface-hover: #38264f;
 
-  --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.14);
-  --shadow-md: 0 12px 35px rgba(0, 0, 0, 0.22);
-  --shadow-lg: 0 24px 65px rgba(0, 0, 0, 0.3);
-  --primary-glow: 0 8px 28px rgba(139, 92, 246, 0.16);
+  --text-primary: #f8f2ff;
+  --text-secondary: #c4b6d8;
+  --text-muted: #b1a1c8;
 
-  /* Status */
-  --success: #4ade80;
-  --success-soft: #183625;
+  --border: #3c2c51;
+  --border-strong: #59406f;
 
-  --warning: #fbbf24;
-  --warning-soft: #3b2d16;
+  --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.16);
+  --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.24);
+  --shadow-lg: 0 22px 55px rgba(0, 0, 0, 0.32);
+  --primary-glow: 0 8px 24px rgba(139, 92, 246, 0.2);
 
-  --danger: #fb7185;
-  --danger-soft: #401d2a;
+  --success: #5ce0a1;
+  --success-soft: #193b30;
+  --warning: #ffd071;
+  --warning-soft: #40311d;
+  --danger: #ff8da3;
+  --danger-soft: #45212e;
 }
 
-/* ========================================
-   GLOBAL RESET
-======================================== */
-
+/* Global reset */
 *,
 *::before,
 *::after {
@@ -112,40 +120,39 @@
 }
 
 html {
+  min-width: 320px;
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--header-height) + 20px);
 }
 
 body {
-  margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  margin: 0;
 
   background: var(--bg);
   color: var(--text-primary);
 
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.65;
 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  transition:
-    background-color var(--transition),
-    color var(--transition);
+  transition: background-color var(--transition), color var(--transition);
 }
 
-/* ========================================
-   TYPOGRAPHY AND FORM CONTROLS
-======================================== */
+#root {
+  min-height: 100vh;
+}
 
 body,
 button,
 input,
 textarea,
 select {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 button,
@@ -158,7 +165,6 @@ select {
 
 button {
   cursor: pointer;
-  border: 0;
 }
 
 button:disabled {
@@ -216,24 +222,17 @@ p {
 
 ::selection {
   background: var(--primary);
-  color: #ffffff;
+  color: #fff;
 }
 
-/* ========================================
-   GLOBAL LAYOUT
-======================================== */
-
-#root {
-  min-height: 100vh;
-}
-
+/* Shared layout utilities */
 .container {
   width: min(var(--container-width), calc(100% - 48px));
   margin-inline: auto;
 }
 
 .section {
-  padding-block: 96px;
+  padding-block: 80px;
 }
 
 .surface {
@@ -249,16 +248,25 @@ p {
     var(--primary) 0%,
     var(--secondary) 100%
   );
-
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* ========================================
-   RESPONSIVE
-======================================== */
+/* Form controls */
+input,
+textarea,
+select {
+  accent-color: var(--primary);
+}
 
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   :root {
     --header-height: 68px;
@@ -269,14 +277,11 @@ p {
   }
 
   .section {
-    padding-block: 64px;
+    padding-block: 52px;
   }
 }
 
-/* ========================================
-   ACCESSIBILITY
-======================================== */
-
+/* Accessibility */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -499,3 +499,99 @@
     gap: 10px;
   }
 }
+
+/* Skillora visual polish — presentation only; preserve existing structure and behavior. */
+.hero-section {
+  padding-block: clamp(68px, 8vw, 108px) clamp(76px, 9vw, 116px);
+  background:
+    radial-gradient(ellipse at 10% 5%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 44%),
+    radial-gradient(ellipse at 90% 80%, rgba(168, 85, 247, 0.07), transparent 38%),
+    var(--bg);
+}
+
+.hero-layout {
+  gap: clamp(36px, 5vw, 72px);
+}
+
+.hero-eyebrow {
+  padding: 9px 15px;
+  border-color: color-mix(in srgb, var(--primary) 22%, var(--border));
+  background: color-mix(in srgb, var(--surface) 90%, var(--primary-soft));
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--primary) 7%, transparent);
+}
+
+.hero-title {
+  max-width: 680px;
+  font-size: clamp(40px, 4.6vw, 66px);
+  line-height: 1.1;
+  letter-spacing: -0.06em;
+  text-wrap: balance;
+}
+
+.hero-description {
+  max-width: 560px;
+  line-height: 1.8;
+  text-wrap: pretty;
+}
+
+.hero-actions {
+  gap: 18px;
+}
+
+.hero-secondary-action {
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.hero-secondary-action:hover {
+  transform: translateY(-2px);
+  color: var(--primary);
+}
+
+.hero-play-icon {
+  box-shadow: 0 5px 16px color-mix(in srgb, var(--primary) 14%, transparent);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.hero-secondary-action:hover .hero-play-icon {
+  transform: scale(1.06);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--primary) 22%, transparent);
+}
+
+.hero-trust-points {
+  row-gap: 12px;
+}
+
+.hero-trust-point svg {
+  flex: 0 0 auto;
+  color: var(--primary);
+}
+
+.hero-visual-card {
+  border-color: color-mix(in srgb, var(--border) 75%, var(--primary));
+  box-shadow: 0 28px 80px color-mix(in srgb, var(--primary) 11%, transparent), var(--shadow-lg);
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.hero-visual-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 34px 90px color-mix(in srgb, var(--primary) 15%, transparent), var(--shadow-lg);
+}
+
+.hero-floating-card {
+  border: 1px solid color-mix(in srgb, var(--border) 70%, var(--primary));
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(18px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-secondary-action,
+  .hero-play-icon,
+  .hero-visual-card {
+    transition: none;
+  }
+
+  .hero-secondary-action:hover,
+  .hero-visual-card:hover {
+    transform: none;
+  }
+}

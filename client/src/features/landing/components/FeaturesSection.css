@@ -234,3 +234,151 @@
     transition: none;
   }
 }
+
+/* Skillora visual polish — styling only; existing JSX and behavior stay unchanged. */
+.features-section {
+  padding-top: clamp(76px, 8vw, 112px);
+  padding-bottom: clamp(76px, 8vw, 112px);
+  background:
+    radial-gradient(ellipse at 8% 18%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 34%),
+    radial-gradient(ellipse at 92% 82%, rgba(219, 76, 152, 0.055), transparent 30%),
+    var(--bg);
+}
+
+.features-heading {
+  max-width: 700px;
+  margin-bottom: clamp(38px, 5vw, 60px);
+}
+
+.section-eyebrow {
+  gap: 9px;
+  margin-bottom: 20px;
+  padding: 9px 15px;
+  border-color: color-mix(in srgb, var(--primary) 22%, var(--border));
+  background: color-mix(in srgb, var(--primary-soft) 72%, var(--surface));
+  box-shadow: 0 5px 18px color-mix(in srgb, var(--primary) 7%, transparent);
+  font-size: 10px;
+  letter-spacing: 1.45px;
+}
+
+.features-heading h2 {
+  margin-bottom: 19px;
+  font-size: clamp(32px, 4.2vw, 49px);
+  font-weight: 750;
+  letter-spacing: -1.8px;
+  line-height: 1.18;
+}
+
+.features-heading > p {
+  max-width: 590px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.95;
+}
+
+.features-grid {
+  gap: 22px;
+}
+
+.feature-card {
+  min-height: 292px;
+  padding: 29px 25px 21px;
+  border-color: color-mix(in srgb, var(--border) 84%, var(--primary) 16%);
+  border-radius: calc(var(--radius-lg) + 3px);
+  background: color-mix(in srgb, var(--surface) 96%, var(--primary) 4%);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--text-primary) 4%, transparent);
+  transition: transform 240ms ease, box-shadow 240ms ease, border-color 240ms ease, background 240ms ease;
+}
+
+.feature-card::before {
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), color-mix(in srgb, var(--secondary) 75%, #f0abfc));
+}
+
+.feature-card:hover {
+  transform: translateY(-7px);
+  border-color: color-mix(in srgb, var(--primary) 42%, var(--border));
+  background: var(--surface);
+  box-shadow: 0 18px 38px color-mix(in srgb, var(--primary) 11%, transparent);
+}
+
+.feature-icon {
+  width: 52px;
+  height: 52px;
+  margin-bottom: 25px;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.24), 0 7px 16px rgba(30, 20, 60, 0.045);
+}
+
+.feature-number {
+  top: 31px;
+  right: 24px;
+  font-size: 10px;
+  letter-spacing: 1.4px;
+}
+
+.feature-card h3 {
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.35px;
+  line-height: 1.5;
+}
+
+.feature-card > p {
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  line-height: 1.85;
+}
+
+.feature-card-bottom {
+  padding-top: 17px;
+  color: var(--text-muted);
+  font-size: 10.5px;
+  letter-spacing: 0.05px;
+}
+
+.feature-card-bottom svg {
+  color: var(--primary);
+  padding: 2px;
+  box-sizing: content-box;
+  border-radius: 7px;
+  background: var(--primary-soft);
+}
+
+.feature-card:focus-within {
+  outline: 2px solid color-mix(in srgb, var(--primary) 65%, transparent);
+  outline-offset: 3px;
+}
+
+[data-theme='dark'] .feature-card {
+  background: color-mix(in srgb, var(--surface) 95%, var(--primary) 5%);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme='dark'] .feature-card:hover {
+  background: var(--surface-hover);
+  box-shadow: 0 18px 40px color-mix(in srgb, var(--primary) 16%, transparent);
+}
+
+@media (max-width: 1050px) {
+  .features-grid { gap: 18px; }
+  .feature-card { min-height: 270px; }
+}
+
+@media (max-width: 560px) {
+  .features-section { padding-top: 66px; padding-bottom: 66px; }
+  .features-heading { margin-bottom: 32px; }
+  .features-heading h2 { font-size: clamp(29px, 8vw, 34px); letter-spacing: -1px; }
+  .features-heading > p { font-size: 13px; line-height: 1.85; }
+  .features-grid { gap: 14px; }
+  .feature-card { min-height: 0; padding: 23px 20px 18px; }
+  .feature-icon { margin-bottom: 20px; }
+  .feature-card > p { margin-bottom: 21px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feature-card, .feature-card::before, .feature-card-bottom svg { transition: none; }
+  .feature-card:hover { transform: none; }
+}
+

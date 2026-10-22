@@ -128,3 +128,148 @@
   }
 }
 
+
+/* Skillora visual polish — preserves the existing Navbar JSX and behavior. */
+.landing-navbar {
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--border) 78%, transparent);
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--text-primary) 4%, transparent);
+  transition: background-color var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+
+.landing-navbar-inner {
+  min-height: max(var(--header-height), 76px);
+  gap: clamp(16px, 2.5vw, 32px);
+}
+
+.landing-nav {
+  gap: clamp(18px, 2.6vw, 34px);
+}
+
+.landing-nav-link {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: color var(--transition), transform var(--transition);
+}
+
+.landing-nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 1px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--primary);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--transition);
+}
+
+.landing-nav-link:hover {
+  transform: translateY(-1px);
+}
+
+.landing-nav-link:hover::after,
+.landing-nav-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.landing-navbar-actions {
+  gap: 18px;
+}
+
+.landing-login-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: color var(--transition), background-color var(--transition), border-color var(--transition);
+}
+
+button.landing-login-link {
+  padding: 0 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+}
+
+button.landing-login-link:hover {
+  background: var(--surface-hover);
+}
+
+.landing-navbar a:focus-visible,
+.landing-navbar button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 40%, transparent);
+  outline-offset: 3px;
+}
+
+.landing-menu-toggle {
+  border: 1px solid var(--border-strong);
+  border-radius: 13px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition), border-color var(--transition), transform var(--transition);
+  cursor: pointer;
+}
+
+.landing-menu-toggle:hover {
+  background: var(--surface-hover);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 760px) {
+  .landing-navbar-inner {
+    min-height: 68px;
+    width: calc(100% - 32px);
+  }
+
+  .landing-nav {
+    padding: 16px 20px 22px;
+    gap: 4px;
+    border-bottom-color: var(--border);
+    border-radius: 0 0 18px 18px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .landing-nav-link {
+    padding: 13px 10px;
+    border-radius: 10px;
+  }
+
+  .landing-nav-link::after {
+    display: none;
+  }
+
+  .landing-nav-link:hover {
+    background: var(--surface-hover);
+    transform: none;
+  }
+
+  .landing-mobile-actions {
+    align-items: center;
+    gap: 14px;
+    padding-top: 18px;
+  }
+
+  .landing-mobile-actions > a:not(:last-child) {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-navbar,
+  .landing-nav-link,
+  .landing-nav-link::after,
+  .landing-login-link,
+  .landing-menu-toggle {
+    transition: none;
+  }
+}
