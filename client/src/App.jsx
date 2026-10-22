@@ -13,7 +13,8 @@ import Dashboard from "./pages/Dashboard";
 import CreateEntryPage from "./pages/CreateEntryPage";
 import EditEntryPage from "./pages/EditEntryPage";
 import ProfilePage from "./pages/ProfilePage";
-
+import JournalPage from "./pages/JournalPage";
+import EntryDetailsPage from "./pages/EntryDetailsPage";
 import MainLayout from "./layouts/MainLayout";
 
 import "./App.css";
@@ -35,6 +36,13 @@ const App = () => {
               <Route path="/dashboard" element={<Dashboard />} />
 
               <Route path="/profile" element={<ProfilePage />} />
+
+              <Route path="/journal" element={<JournalPage />} />
+
+              <Route
+                path="/learning-entries/:id"
+                element={<EntryDetailsPage />}
+              />
 
               <Route
                 path="/learning-entries/new"

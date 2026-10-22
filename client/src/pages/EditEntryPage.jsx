@@ -35,10 +35,7 @@ const EditEntryPage = () => {
             studyDurationMinutes: String(
               entry.studyDurationMinutes ?? ""
             ),
-            difficulty: entry.difficulty
-              ? entry.difficulty.charAt(0).toUpperCase() +
-              entry.difficulty.slice(1).toLowerCase()
-              : "Medium",
+            difficulty: entry.difficulty || "Medium",
             learningDate: entry.learningDate
               ? new Date(entry.learningDate)
                 .toISOString()
@@ -55,7 +52,9 @@ const EditEntryPage = () => {
           );
         }
       } finally {
-        if (active) setIsLoading(false);
+        if (active) {
+          setIsLoading(false);
+        }
       }
     };
 
@@ -91,6 +90,11 @@ const EditEntryPage = () => {
       return;
     }
 
+    if (duration > 1440) {
+      setError("Study duration cannot exceed 1440 minutes.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -102,7 +106,11 @@ const EditEntryPage = () => {
         learningDate: form.learningDate,
       });
 
-      navigate("/dashboard");
+      // Return to My Journal after a successful update.
+      navigate("/journal", {
+        replace: true,
+        state: { entryUpdated: true },
+      });
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -116,7 +124,7 @@ const EditEntryPage = () => {
   if (isLoading) {
     return (
       <main className="create-entry-page">
-        <p role="status">Loading learning entry…</p>
+        <p role="status">Loading learning entry...</p>
       </main>
     );
   }
@@ -131,9 +139,9 @@ const EditEntryPage = () => {
         <button
           type="button"
           className="create-entry-cancel"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate("/journal")}
         >
-          Back to dashboard
+          Back to My Journal
         </button>
       </main>
     );
@@ -145,9 +153,9 @@ const EditEntryPage = () => {
         <button
           type="button"
           className="create-entry-back"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate("/journal")}
         >
-          ← Back to dashboard
+          ← Back to My Journal
         </button>
 
         <header className="create-entry-heading">
@@ -175,7 +183,8 @@ const EditEntryPage = () => {
               name="topic"
               value={form.topic}
               onChange={handleChange}
-              maxLength={120}
+              minLength={2}
+              maxLength={100}
               required
             />
           </div>
@@ -205,6 +214,7 @@ const EditEntryPage = () => {
                 name="studyDurationMinutes"
                 type="number"
                 min="1"
+                max="1440"
                 step="1"
                 value={form.studyDurationMinutes}
                 onChange={handleChange}
@@ -246,7 +256,7 @@ const EditEntryPage = () => {
             <button
               type="button"
               className="create-entry-cancel"
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/journal")}
               disabled={isSubmitting}
             >
               Cancel
@@ -258,7 +268,7 @@ const EditEntryPage = () => {
               disabled={isSubmitting}
             >
               {isSubmitting
-                ? "Saving changes…"
+                ? "Saving changes..."
                 : "Save changes"}
             </button>
           </div>
