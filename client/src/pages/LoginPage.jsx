@@ -1,25 +1,27 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
 import {
-  ArrowLeft,
   ArrowRight,
   BookOpen,
   ChartNoAxesColumnIncreasing,
   Eye,
   EyeOff,
+  Heart,
   LockKeyhole,
   Mail,
   Moon,
+  Sparkles,
+  Star,
   Sun,
   Target,
-  TrendingUp,
+  Users,
 } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { loginUser } from "../services/authService";
+import studentArtwork from "../assets/images/skillora-student.png";
 import "./LoginPage.css";
 
 const LoginPage = () => {
@@ -78,7 +80,7 @@ const LoginPage = () => {
 
       showToast("Login successful! Welcome back to Skillora.", "success");
 
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -97,166 +99,124 @@ const LoginPage = () => {
           <span className="login-logo-icon">
             <BookOpen size={25} strokeWidth={2.2} />
           </span>
-          <span>
-            Skill<span className="login-logo-accent">ora</span>
+
+          <span className="login-logo-text">
+            Skill<span>ora</span>
           </span>
         </Link>
 
-        <button
-          type="button"
-          className="login-theme-toggle"
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-          title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-        >
-          {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-        </button>
+        <div className="login-topbar-actions">
+          <span className="login-new-here">New here?</span>
+
+          <Link to="/register" className="login-signup-link">
+            Sign up
+          </Link>
+
+          <button
+            type="button"
+            className="login-theme-toggle"
+            onClick={toggleTheme}
+            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+          >
+            {theme === "dark" ? <Sun size={19} /> : <Moon size={19} />}
+          </button>
+        </div>
       </header>
 
       <div className="login-layout">
         <section className="login-showcase">
-          <Link to="/" className="login-back-link">
-            <ArrowLeft size={17} />
-            Back to home
-          </Link>
-
           <div className="login-showcase-content">
-            <div className="login-illustration" aria-hidden="true">
-              <div className="login-orbit login-orbit-one" />
-              <div className="login-orbit login-orbit-two" />
-
-              <div className="login-floating-card login-floating-book">
-                <BookOpen size={27} />
-              </div>
-
-              <div className="login-floating-card login-floating-chart">
-                <ChartNoAxesColumnIncreasing size={31} />
-              </div>
-
-              <div className="login-floating-card login-floating-progress">
-                <TrendingUp size={19} />
-                <span>
-                  <strong>75%</strong>
-                  <small>Progress</small>
-                </span>
-              </div>
-
-              <div className="login-study-scene">
-                <div className="login-study-glow" />
-
-                <div className="login-study-person">
-                  <div className="login-person-hair" />
-                  <div className="login-person-face">
-                    <span className="login-person-eye login-eye-left" />
-                    <span className="login-person-eye login-eye-right" />
-                    <span className="login-person-smile" />
-                  </div>
-                  <div className="login-person-neck" />
-                  <div className="login-person-body">
-                    <BookOpen size={30} />
-                  </div>
-                </div>
-
-                <div className="login-laptop">
-                  <div className="login-laptop-screen">
-                    <span />
-                  </div>
-                  <div className="login-laptop-base" />
-                </div>
-
-                <div className="login-books">
-                  <span />
-                  <span />
-                  <span />
-                </div>
-
-                <div className="login-plant">
-                  <span />
-                  <span />
-                  <span />
-                  <i />
-                </div>
-              </div>
-            </div>
-
             <div className="login-hero-copy">
-              <span className="login-eyebrow">LEARN · TRACK · GROW</span>
+              <span className="login-eyebrow">
+                <Sparkles size={15} />
+                YOUR PERSONAL LEARNING JOURNAL
+              </span>
 
               <h1>
-                Your Learning
+                Turn Your
                 <br />
-                Journey, Better
+                Learning Into
                 <br />
-                <span>Every Day.</span>
+                <span className="login-gradient-text">Real Progress</span>
               </h1>
 
-              <p>
-                Track your progress, build better habits, and achieve your
-                goals with Skillora.
+              <p className="login-hero-description">
+                Write, reflect, track and grow with a beautiful learning
+                journal.
               </p>
             </div>
 
             <div className="login-benefits">
               <div className="login-benefit">
-                <span className="login-benefit-icon">
-                  <TrendingUp size={19} />
+                <span className="login-benefit-icon benefit-purple">
+                  <BookOpen size={23} />
                 </span>
-                <span>
+
+                <span className="login-benefit-copy">
+                  <strong>Capture Learning</strong>
+                  <small>Organize your thoughts and key takeaways.</small>
+                </span>
+              </div>
+
+              <div className="login-benefit">
+                <span className="login-benefit-icon benefit-pink">
+                  <ChartNoAxesColumnIncreasing size={23} />
+                </span>
+
+                <span className="login-benefit-copy">
                   <strong>Track Progress</strong>
-                  <small>Log your daily learning</small>
+                  <small>See your growth with beautiful insights.</small>
                 </span>
               </div>
 
               <div className="login-benefit">
-                <span className="login-benefit-icon">
-                  <Target size={19} />
+                <span className="login-benefit-icon benefit-orange">
+                  <Target size={23} />
                 </span>
-                <span>
-                  <strong>Build Habits</strong>
-                  <small>Stay consistent</small>
-                </span>
-              </div>
 
-              <div className="login-benefit">
-                <span className="login-benefit-icon">
-                  <BookOpen size={19} />
-                </span>
-                <span>
+                <span className="login-benefit-copy">
                   <strong>Achieve Goals</strong>
-                  <small>Become a better version of you</small>
+                  <small>Stay consistent and build better habits.</small>
                 </span>
               </div>
+            </div>
+
+            {/* Updated artwork: replaces the CSS-made cartoon boy. */}
+            <div className="login-artwork" aria-hidden="true">
+              <div className="login-artwork-glow" />
+
+              <div className="login-artwork-orbit orbit-left" />
+              <div className="login-artwork-orbit orbit-right" />
+
+              <img
+                className="login-student-image"
+                src={studentArtwork}
+                alt=""
+                draggable="false"
+              />
             </div>
           </div>
         </section>
 
         <section className="login-form-section">
           <div className="login-card">
-            <div className="login-card-brand">
-              <span className="login-logo-icon">
-                <BookOpen size={25} strokeWidth={2.2} />
-              </span>
-              <span>
-                Skill<span className="login-logo-accent">ora</span>
-              </span>
+            <div className="login-card-heading">
+              <span className="login-card-eyebrow">WELCOME TO SKILLORA</span>
+
+              <h2>Welcome Back!</h2>
+
+              <p className="login-description">
+                Login to continue your learning journey.
+              </p>
             </div>
-
-            <span className="login-card-eyebrow">
-              YOUR LEARNING JOURNEY
-            </span>
-
-            <h2>Welcome back!</h2>
-
-            <p className="login-description">
-              Sign in to continue building better learning habits.
-            </p>
 
             <form onSubmit={handleSubmit} noValidate>
               <div className="login-field">
                 <label htmlFor="login-email">Email address</label>
 
                 <div className="login-input-wrap">
-                  <Mail size={19} aria-hidden="true" />
+                  <Mail size={20} aria-hidden="true" />
 
                   <input
                     id="login-email"
@@ -275,7 +235,7 @@ const LoginPage = () => {
                 <label htmlFor="login-password">Password</label>
 
                 <div className="login-input-wrap">
-                  <LockKeyhole size={19} aria-hidden="true" />
+                  <LockKeyhole size={20} aria-hidden="true" />
 
                   <input
                     id="login-password"
@@ -291,8 +251,12 @@ const LoginPage = () => {
                   <button
                     type="button"
                     className="login-password-toggle"
-                    onClick={() => setShowPassword((previous) => !previous)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    onClick={() =>
+                      setShowPassword((previous) => !previous)
+                    }
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                   >
                     {showPassword ? (
                       <EyeOff size={19} />
@@ -309,7 +273,7 @@ const LoginPage = () => {
                   Secure sign in
                 </span>
 
-                <Link to="/forgot-password">Forgot password?</Link>
+                <Link to="/forgot-password">Forgot Password?</Link>
               </div>
 
               {error && (
@@ -323,7 +287,7 @@ const LoginPage = () => {
                 className="login-submit"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Signing in..." : "Sign in"}
+                {isSubmitting ? "Signing in..." : "Login"}
                 {!isSubmitting && <ArrowRight size={19} />}
               </button>
             </form>
@@ -336,7 +300,7 @@ const LoginPage = () => {
 
             <p className="login-footer">
               Don&apos;t have an account?{" "}
-              <Link to="/register">Create account</Link>
+              <Link to="/register">Sign up</Link>
             </p>
           </div>
 
@@ -345,6 +309,48 @@ const LoginPage = () => {
           </p>
         </section>
       </div>
+
+      {/* <footer className="login-stats">
+        <div className="login-stat">
+          <span className="login-stat-icon stat-purple">
+            <Users size={20} />
+          </span>
+          <span className="login-stat-copy">
+            <strong>10K+</strong>
+            <small>Active Learners</small>
+          </span>
+        </div>
+
+        <div className="login-stat">
+          <span className="login-stat-icon stat-orange">
+            <Star size={20} />
+          </span>
+          <span className="login-stat-copy">
+            <strong>50K+</strong>
+            <small>Entries Written</small>
+          </span>
+        </div>
+
+        <div className="login-stat">
+          <span className="login-stat-icon stat-pink">
+            <Heart size={20} />
+          </span>
+          <span className="login-stat-copy">
+            <strong>4.8/5</strong>
+            <small>User Rating</small>
+          </span>
+        </div>
+
+        <div className="login-stat">
+          <span className="login-stat-icon stat-teal">
+            <Target size={20} />
+          </span>
+          <span className="login-stat-copy">
+            <strong>95%</strong>
+            <small>Stay Consistent</small>
+          </span>
+        </div>
+      </footer> */}
     </main>
   );
 };
