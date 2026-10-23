@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { AuthProvider } from "./context/AuthContext";
@@ -15,6 +14,7 @@ import EditEntryPage from "./pages/EditEntryPage";
 import ProfilePage from "./pages/ProfilePage";
 import JournalPage from "./pages/JournalPage";
 import EntryDetailsPage from "./pages/EntryDetailsPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import MainLayout from "./layouts/MainLayout";
 
 import "./App.css";
@@ -27,6 +27,7 @@ const App = () => {
           {/* Public routes: no application sidebar */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
 
