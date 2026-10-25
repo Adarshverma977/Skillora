@@ -45,12 +45,6 @@ const protect = asyncHandler(async (req, res, next) => {
     throw new AppError("Please verify your email before continuing.", 403);
   }
 
-  console.log("Auth debug:", {
-    userId: user._id.toString(),
-    tokenVersionFromJWT: decoded.tokenVersion,
-    tokenVersionFromDB: user.tokenVersion,
-  });
-
   const tokenVersion = decoded.tokenVersion ?? 0;
   const currentTokenVersion = user.tokenVersion ?? 0;
 
