@@ -15,6 +15,7 @@ import ProfilePage from "./pages/ProfilePage";
 import JournalPage from "./pages/JournalPage";
 import EntryDetailsPage from "./pages/EntryDetailsPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import SettingsPage from "./pages/SettingsPage";
 import MainLayout from "./layouts/MainLayout";
 
 import "./App.css";
@@ -37,6 +38,8 @@ const App = () => {
               <Route path="/dashboard" element={<Dashboard />} />
 
               <Route path="/profile" element={<ProfilePage />} />
+
+              <Route path="/settings" element={<SettingsPage />} />
 
               <Route path="/journal" element={<JournalPage />} />
 

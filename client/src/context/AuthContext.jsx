@@ -12,7 +12,13 @@ const AuthContext = createContext(null);
 const TOKEN_KEY = "skillora-token";
 const USER_KEY = "skillora-user";
 
-const getStoredToken = () => localStorage.getItem(TOKEN_KEY);
+const getStoredToken = () => {
+  try {
+    return localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+};
 
 const getStoredUser = () => {
   try {
@@ -28,8 +34,13 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(getStoredUser);
 
   const login = useCallback(({ token: authToken, user: authUser }) => {
-    localStorage.setItem(TOKEN_KEY, authToken);
-    localStorage.setItem(USER_KEY, JSON.stringify(authUser));
+    try {
+      localStorage.setItem(TOKEN_KEY, authToken);
+      localStorage.setItem(USER_KEY, JSON.stringify(authUser));
+    } catch (error) {
+      console.error("Unable to save authentication data:", error);
+      throw error;
+    }
 
     setToken(authToken);
     setUser(authUser);
@@ -42,15 +53,23 @@ export const AuthProvider = ({ children }) => {
         ...updates,
       };
 
-      localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
+      try {
+        localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
+      } catch (error) {
+        console.error("Unable to save user data:", error);
+      }
 
       return updatedUser;
     });
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
+    try {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+    } catch (error) {
+      console.error("Unable to clear authentication data:", error);
+    }
 
     setToken(null);
     setUser(null);

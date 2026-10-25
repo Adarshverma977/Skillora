@@ -10,6 +10,19 @@ const authApi = axios.create({
   },
 });
 
+authApi.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("skillora-token");
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
+
 export const registerUser = async ({ name, email, password }) => {
   const response = await authApi.post("/register", {
     name: name.trim(),
@@ -49,6 +62,15 @@ export const resetPassword = async ({ token, password }) => {
   const response = await authApi.post("/reset-password", {
     token,
     password,
+  });
+
+  return response.data;
+};
+
+export const changePassword = async ({ currentPassword, newPassword }) => {
+  const response = await authApi.patch("/change-password", {
+    currentPassword,
+    newPassword,
   });
 
   return response.data;
