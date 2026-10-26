@@ -1,5 +1,6 @@
+
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import {
   Eye,
@@ -15,7 +16,6 @@ import {
   Sparkles,
 } from 'lucide-react';
 
-import Logo from '../components/Logo';
 import ThemeToggle from '../components/ThemeToggle';
 import { registerUser } from '../services/authService';
 import studentArtwork from '../assets/images/skillora-student.png';
@@ -23,6 +23,7 @@ import './RegisterPage.css';
 
 const RegisterPage = () => {
   const { showToast } = useToast();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -52,7 +53,7 @@ const RegisterPage = () => {
     setError('');
 
     const name = formData.name.trim();
-    const email = formData.email.trim();
+    const email = formData.email.trim().toLowerCase();
 
     if (name.length < 2 || name.length > 50) {
       setError('Name must contain between 2 and 50 characters.');
@@ -97,6 +98,10 @@ const RegisterPage = () => {
         email: '',
         password: '',
         confirmPassword: '',
+      });
+
+      navigate('/verify-email', {
+        state: { email },
       });
     } catch (err) {
       const response = err.response;

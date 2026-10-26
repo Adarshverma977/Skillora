@@ -41,6 +41,14 @@ export const verifyEmail = async (token) => {
   return response.data;
 };
 
+export const resendVerificationEmail = async ({ email }) => {
+  const response = await authApi.post("/resend-verification", {
+    email: email.trim(),
+  });
+
+  return response.data;
+};
+
 export const loginUser = async ({ email, password }) => {
   const response = await authApi.post("/login", {
     email: email.trim(),
