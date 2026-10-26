@@ -8,7 +8,11 @@ const verificationEmail = require("../templates/verificationEmail");
 const AppError = require("../utils/AppError");
 
 const registerUser = async ({ name, email, password }) => {
-  const existingUser = await User.findOne({ email });
+  const normalizedEmail = email.trim().toLowerCase();
+
+  const existingUser = await User.findOne({
+    email: normalizedEmail,
+  });
 
   if (existingUser) {
     throw new AppError("Unable to register with this email address", 409);
@@ -17,8 +21,8 @@ const registerUser = async ({ name, email, password }) => {
   const { token, tokenHash } = generateSecureToken();
 
   const user = await User.create({
-    name,
-    email,
+    name: name.trim(),
+    email: normalizedEmail,
     password,
     isEmailVerified: false,
     emailVerificationTokenHash: tokenHash,
@@ -83,8 +87,64 @@ const verifyEmail = async (token) => {
   };
 };
 
+const resendVerificationEmail = async ({ email }) => {
+  const normalizedEmail = email.trim().toLowerCase();
+
+  const genericMessage =
+    "If this account requires verification, a verification email will be sent.";
+
+  const user = await User.findOne({
+    email: normalizedEmail,
+  });
+
+  if (!user || user.isEmailVerified) {
+    return { message: genericMessage };
+  }
+
+  const clientUrl = process.env.CLIENT_URL;
+
+  if (!clientUrl) {
+    throw new AppError("Email verification is not configured.", 500);
+  }
+
+  const { token, tokenHash } = generateSecureToken();
+
+  const verificationUrl = new URL("/verify-email", clientUrl);
+  verificationUrl.searchParams.set("token", token);
+
+  const emailContent = verificationEmail({
+    name: user.name,
+    verificationUrl: verificationUrl.toString(),
+  });
+
+  // Save the new token only after email delivery succeeds.
+  // This avoids invalidating the previous link if sending fails.
+  try {
+    await sendEmail({
+      to: user.email,
+      ...emailContent,
+    });
+  } catch (error) {
+    throw new AppError(
+      "Unable to send verification email. Please try again.",
+      503,
+    );
+  }
+
+  user.emailVerificationTokenHash = tokenHash;
+  user.emailVerificationExpires = new Date(Date.now() + 15 * 60 * 1000);
+
+  await user.save();
+
+  return { message: genericMessage };
+};
+
 const loginUser = async ({ email, password }) => {
-  const user = await User.findOne({ email }).select("+password +tokenVersion");
+  const normalizedEmail = email.trim().toLowerCase();
+
+  const user = await User.findOne({
+    email: normalizedEmail,
+  }).select("+password +tokenVersion");
 
   if (!user) {
     throw new AppError("Invalid email or password.", 401);
@@ -136,9 +196,12 @@ const forgotPassword = async ({ email }) => {
   const genericMessage =
     "If an account exists with this email, password reset instructions will be sent.";
 
-  const user = await User.findOne({ email });
+  const normalizedEmail = email.trim().toLowerCase();
 
-  // Return the same message for unknown emails.
+  const user = await User.findOne({
+    email: normalizedEmail,
+  });
+
   if (!user) {
     return { message: genericMessage };
   }
@@ -170,7 +233,6 @@ const forgotPassword = async ({ email }) => {
       ...emailContent,
     });
   } catch (error) {
-    // Remove the reset token if email delivery fails.
     user.passwordResetTokenHash = undefined;
     user.passwordResetExpires = undefined;
     await user.save();
@@ -205,13 +267,9 @@ const resetPassword = async ({ token, password }) => {
     );
   }
 
-  // User.js pre-save middleware hashes this password.
   user.password = password;
-
   user.passwordResetTokenHash = undefined;
   user.passwordResetExpires = undefined;
-
-  // Invalidate previously issued JWTs.
   user.tokenVersion = (user.tokenVersion ?? 0) + 1;
 
   await user.save();
@@ -224,6 +282,7 @@ const resetPassword = async ({ token, password }) => {
 module.exports = {
   registerUser,
   verifyEmail,
+  resendVerificationEmail,
   loginUser,
   logoutUser,
   forgotPassword,

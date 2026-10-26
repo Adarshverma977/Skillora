@@ -1,12 +1,25 @@
 const express = require("express");
 
-const { register, verifyEmailHandler, login, logout, forgotPasswordHandler, resetPasswordHandler, getMe, updateProfile, changePassword, } = require("../controllers/authController");
+const {
+  register,
+  verifyEmailHandler,
+  login,
+  logout,
+  forgotPasswordHandler,
+  resendVerificationEmailHandler,
+  resetPasswordHandler,
+  getMe,
+  updateProfile,
+  changePassword,
+} = require("../controllers/authController");
 
 const validateRequest = require("../middlewares/validateRequest");
 
-const { registerSchema, verifyEmailSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, updateProfileSchema, changePasswordSchema } = require("../validators/authValidators");
+const { registerSchema, verifyEmailSchema, loginSchema, forgotPasswordSchema, resendVerificationEmailSchema, resetPasswordSchema, updateProfileSchema, changePasswordSchema } = require("../validators/authValidators");
 
 const { protect } = require("../middlewares/authMiddleware");
+
+const resendVerificationLimiter = require("../middlewares/resendVerificationLimiter");
 
 const router = express.Router();
 
@@ -16,6 +29,13 @@ router.post(
   "/verify-email",
   validateRequest(verifyEmailSchema),
   verifyEmailHandler,
+);
+
+router.post(
+  "/resend-verification",
+  resendVerificationLimiter,
+  validateRequest(resendVerificationEmailSchema),
+  resendVerificationEmailHandler,
 );
 
 router.post("/login", validateRequest(loginSchema), login);

@@ -40,6 +40,14 @@ const forgotPasswordSchema = z.object({
     .transform((value) => value.toLowerCase()),
 });
 
+const resendVerificationEmailSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .email("Please provide a valid email address")
+    .transform((value) => value.toLowerCase()),
+});
+
 const resetPasswordSchema = z.object({
   token: z.string().min(1, "Reset token is required"),
 
@@ -84,6 +92,7 @@ module.exports = {
   registerSchema,
   loginSchema,
   forgotPasswordSchema,
+  resendVerificationEmailSchema,
   resetPasswordSchema,
   verifyEmailSchema,
   updateProfileSchema,

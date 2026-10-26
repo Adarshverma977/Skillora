@@ -9,6 +9,7 @@ const asyncHandler = require("../utils/asyncHandler");
 const {
   registerUser,
   verifyEmail,
+  resendVerificationEmail,
   loginUser,
   logoutUser,
   forgotPassword,
@@ -27,6 +28,15 @@ const register = asyncHandler(async (req, res) => {
 
 const verifyEmailHandler = asyncHandler(async (req, res) => {
   const result = await verifyEmail(req.body.token);
+
+  res.status(200).json({
+    success: true,
+    message: result.message,
+  });
+});
+
+const resendVerificationEmailHandler = asyncHandler(async (req, res) => {
+  const result = await resendVerificationEmail(req.body);
 
   res.status(200).json({
     success: true,
@@ -153,6 +163,7 @@ const changePassword = asyncHandler(async (req, res) => {
 module.exports = {
   register,
   verifyEmailHandler,
+  resendVerificationEmailHandler,
   login,
   logout,
   forgotPasswordHandler,
