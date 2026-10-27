@@ -7,7 +7,7 @@ import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
-
+import SearchFilterPage from "./pages/SearchFilterPage";
 import Dashboard from "./pages/Dashboard";
 import CreateEntryPage from "./pages/CreateEntryPage";
 import EditEntryPage from "./pages/EditEntryPage";
@@ -42,6 +42,8 @@ const App = () => {
               <Route path="/settings" element={<SettingsPage />} />
 
               <Route path="/journal" element={<JournalPage />} />
+
+              <Route path="/search" element={<SearchFilterPage />} />
 
               <Route
                 path="/learning-entries/:id"
