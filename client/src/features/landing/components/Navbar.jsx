@@ -1,15 +1,19 @@
-
 import { useState } from 'react';
-import { ArrowRight, Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
+import {
+  ArrowRight,
+  Menu,
+  X,
+  LogOut,
+  LayoutDashboard,
+} from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import Logo from '../../../components/Logo';
+import SkilloraLogo from '../../../components/SkilloraLogo';
 import Button from '../../../components/Button';
 import ThemeToggle from '../../../components/ThemeToggle';
 import { useAuth } from '../../../context/AuthContext';
 import './Navbar.css';
 
 const Navbar = () => {
-  
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
 
@@ -74,10 +78,11 @@ const Navbar = () => {
   return (
     <header className="landing-navbar">
       <div className="landing-navbar-inner">
-        <Logo />
+        <SkilloraLogo variant="compact" showTagline={false} />
 
         <nav
-          className={`landing-nav ${menuOpen ? 'landing-nav-open' : ''}`}
+          className={`landing-nav ${menuOpen ? 'landing-nav-open' : ''
+            }`}
           aria-label="Main navigation"
         >
           {navLinks.map((item) => (

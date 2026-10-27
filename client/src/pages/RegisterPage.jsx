@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 
 import ThemeToggle from '../components/ThemeToggle';
+import SkilloraLogo from "../components/SkilloraLogo";
 import { registerUser } from '../services/authService';
 import studentArtwork from '../assets/images/skillora-student.png';
 import './RegisterPage.css';
@@ -131,17 +132,9 @@ const RegisterPage = () => {
   return (
     <main className="register-page">
       <header className="register-header">
-        <Link
-          to="/"
-          className="register-brand"
-          aria-label="Skillora home"
-        >
-          <span className="register-brand-icon">
-            <BookOpen size={25} strokeWidth={2.2} />
-          </span>
-          <span className="register-brand-name">
-            Skill<span>ora</span>
-          </span>
+
+        <Link to="/" className="register-logo" aria-label="Skillora home">
+          <SkilloraLogo variant="compact" showTagline={false} />
         </Link>
 
         <div className="register-header-actions">

@@ -10,7 +10,7 @@ import {
   BookOpen,
   ChartNoAxesCombined,
   ChevronDown,
-  Command,
+  GraduationCap,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -22,6 +22,7 @@ import {
 
 import { useAuth } from "../context/AuthContext";
 import ThemeToggle from "../components/ThemeToggle";
+import SkilloraLogo from "../components/SkilloraLogo";
 import "./MainLayout.css";
 
 const navigationItems = [
@@ -114,19 +115,14 @@ export default function MainLayout() {
         aria-label="Main navigation"
       >
         <div className="main-layout__brand-row">
+
           <NavLink
             to="/dashboard"
             className="main-layout__brand"
             onClick={closeMobileMenu}
+            aria-label="Skillora home"
           >
-            <span className="main-layout__brand-icon">
-              <Command size={23} strokeWidth={2} />
-            </span>
-
-            <span className="main-layout__brand-copy">
-              <strong>Skillora</strong>
-              <small>YOUR LEARNING SPACE</small>
-            </span>
+            <SkilloraLogo variant="compact" showTagline={true} />
           </NavLink>
 
           <button
@@ -195,9 +191,7 @@ export default function MainLayout() {
           </button>
 
           <div className="main-layout__breadcrumb">
-            <span>Skillora</span>
-            <span className="main-layout__breadcrumb-divider">/</span>
-            <strong>{activePage}</strong>
+            <h1>{activePage}</h1>
           </div>
 
           <div className="main-layout__topbar-actions">

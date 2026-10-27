@@ -1,5 +1,4 @@
-
-import Logo from "./Logo";
+import SkilloraLogo from "./SkilloraLogo";
 import ThemeToggle from "./ThemeToggle";
 import "./AuthHeader.css";
 
@@ -7,7 +6,7 @@ const AuthHeader = () => {
   return (
     <header className="auth-header">
       <div className="auth-header-inner">
-        <Logo />
+        <SkilloraLogo variant="compact" showTagline={false} />
         <ThemeToggle />
       </div>
     </header>

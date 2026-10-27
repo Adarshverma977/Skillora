@@ -22,6 +22,7 @@ import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { loginUser } from "../services/authService";
 import studentArtwork from "../assets/images/skillora-student.png";
+import SkilloraLogo from "../components/SkilloraLogo";
 import "./LoginPage.css";
 
 const LoginPage = () => {
@@ -95,14 +96,9 @@ const LoginPage = () => {
   return (
     <main className="login-page">
       <header className="login-topbar">
-        <Link to="/" className="login-logo" aria-label="Skillora home">
-          <span className="login-logo-icon">
-            <BookOpen size={25} strokeWidth={2.2} />
-          </span>
 
-          <span className="login-logo-text">
-            Skill<span>ora</span>
-          </span>
+        <Link to="/" className="login-logo" aria-label="Skillora home">
+          <SkilloraLogo variant="compact" showTagline={false} />
         </Link>
 
         <div className="login-topbar-actions">
