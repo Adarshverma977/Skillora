@@ -1084,3 +1084,332 @@
     width: 100%;
   }
 }
+
+/* =========================================
+   SKILLORA — DASHBOARD MOTION SYSTEM
+   Smooth entrance + hover + chart animations
+========================================= */
+
+/* Main entrance animation */
+@keyframes dashboardFadeUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Subtle glow movement */
+@keyframes dashboardGlow {
+  0%, 100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.9;
+    transform: scale(1.08);
+  }
+}
+
+/* Icon entrance */
+@keyframes dashboardIconPop {
+  from {
+    opacity: 0;
+    transform: scale(0.78) rotate(-8deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+/* Weekly chart bars */
+@keyframes dashboardBarGrow {
+  from {
+    transform: scaleY(0.08);
+    opacity: 0.45;
+  }
+
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+/* Welcome section */
+.dashboard-page .dashboard-welcome {
+  animation: dashboardFadeUp 650ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.dashboard-page .dashboard-welcome::after {
+  animation: dashboardGlow 6s ease-in-out infinite;
+}
+
+/* Statistics cards — staggered entrance */
+.dashboard-page .dashboard-stat-card {
+  animation: dashboardFadeUp 550ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  transition:
+    transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 260ms ease,
+    box-shadow 260ms ease;
+}
+
+.dashboard-page .dashboard-stat-card:nth-child(1) {
+  animation-delay: 80ms;
+}
+
+.dashboard-page .dashboard-stat-card:nth-child(2) {
+  animation-delay: 150ms;
+}
+
+.dashboard-page .dashboard-stat-card:nth-child(3) {
+  animation-delay: 220ms;
+}
+
+.dashboard-page .dashboard-stat-card:nth-child(4) {
+  animation-delay: 290ms;
+}
+
+.dashboard-page .dashboard-stat-card:nth-child(5) {
+  animation-delay: 360ms;
+}
+
+.dashboard-page .dashboard-stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.dashboard-page .dashboard-stat-icon {
+  transition:
+    transform 260ms ease,
+    background-color 260ms ease;
+}
+
+.dashboard-page .dashboard-stat-card:hover .dashboard-stat-icon {
+  transform: translateY(-3px) scale(1.06);
+}
+
+/* Analytics cards */
+.dashboard-page .dashboard-analytics-card {
+  animation: dashboardFadeUp 650ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  transition:
+    transform 260ms ease,
+    border-color 260ms ease,
+    box-shadow 260ms ease;
+}
+
+.dashboard-page .dashboard-analytics-card:nth-child(1) {
+  animation-delay: 180ms;
+}
+
+.dashboard-page .dashboard-analytics-card:nth-child(2) {
+  animation-delay: 260ms;
+}
+
+.dashboard-page .dashboard-analytics-card:nth-child(3) {
+  animation-delay: 340ms;
+}
+
+.dashboard-page .dashboard-analytics-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Animate chart bars from the bottom */
+.dashboard-page .dashboard-chart-bar {
+  transform-origin: bottom;
+  animation: dashboardBarGrow 850ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  transition: height 350ms ease;
+}
+
+.dashboard-page .dashboard-chart-day:nth-child(1) .dashboard-chart-bar {
+  animation-delay: 100ms;
+}
+
+.dashboard-page .dashboard-chart-day:nth-child(2) .dashboard-chart-bar {
+  animation-delay: 160ms;
+}
+
+.dashboard-page .dashboard-chart-day:nth-child(3) .dashboard-chart-bar {
+  animation-delay: 220ms;
+}
+
+.dashboard-page .dashboard-chart-day:nth-child(4) .dashboard-chart-bar {
+  animation-delay: 280ms;
+}
+
+.dashboard-page .dashboard-chart-day:nth-child(5) .dashboard-chart-bar {
+  animation-delay: 340ms;
+}
+
+.dashboard-page .dashboard-chart-day:nth-child(6) .dashboard-chart-bar {
+  animation-delay: 400ms;
+}
+
+.dashboard-page .dashboard-chart-day:nth-child(7) .dashboard-chart-bar {
+  animation-delay: 460ms;
+}
+
+/* Difficulty progress bars */
+.dashboard-page .dashboard-difficulty-bar {
+  transform-origin: left;
+  animation: dashboardBarGrow 750ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* Recent activity */
+.dashboard-page .dashboard-recent-item {
+  animation: dashboardFadeUp 450ms ease both;
+  transition:
+    background-color 200ms ease,
+    transform 200ms ease;
+}
+
+.dashboard-page .dashboard-recent-item:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+.dashboard-page .dashboard-recent-item:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.dashboard-page .dashboard-recent-item:nth-child(4) {
+  animation-delay: 180ms;
+}
+
+.dashboard-page .dashboard-recent-item:nth-child(5) {
+  animation-delay: 240ms;
+}
+
+.dashboard-page .dashboard-recent-item:hover {
+  transform: translateX(4px);
+  background: var(--surface-hover);
+}
+
+/* Journal section */
+.dashboard-page .dashboard-entries-heading,
+.dashboard-page .dashboard-filters {
+  animation: dashboardFadeUp 550ms ease both;
+}
+
+.dashboard-page .dashboard-entry-card {
+  animation: dashboardFadeUp 500ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  transition:
+    transform 240ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 240ms ease,
+    box-shadow 240ms ease;
+}
+
+.dashboard-page .dashboard-entry-card:nth-child(2n) {
+  animation-delay: 80ms;
+}
+
+.dashboard-page .dashboard-entry-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Buttons */
+.dashboard-page .dashboard-primary-button {
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    filter 220ms ease;
+}
+
+.dashboard-page .dashboard-primary-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+}
+
+.dashboard-page .dashboard-primary-button:active {
+  transform: scale(0.98);
+}
+
+.dashboard-page .dashboard-search-form button,
+.dashboard-page .dashboard-entry-actions button,
+.dashboard-page .dashboard-pagination-actions button,
+.dashboard-page .dashboard-clear-filters {
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.dashboard-page .dashboard-search-form button:hover:not(:disabled),
+.dashboard-page .dashboard-entry-actions button:hover:not(:disabled),
+.dashboard-page .dashboard-pagination-actions button:hover:not(:disabled),
+.dashboard-page .dashboard-clear-filters:hover {
+  transform: translateY(-1px);
+}
+
+/* Empty state */
+.dashboard-page .dashboard-empty-state {
+  animation: dashboardFadeUp 600ms ease both;
+}
+
+.dashboard-page .dashboard-empty-icon {
+  animation: dashboardIconPop 600ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* Delete confirmation modal */
+.dashboard-delete-overlay {
+  animation: dashboardOverlayIn 180ms ease both;
+}
+
+.dashboard-delete-modal {
+  animation: dashboardModalIn 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes dashboardOverlayIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Keyboard accessibility */
+.dashboard-page button:focus-visible,
+.dashboard-page input:focus-visible,
+.dashboard-page select:focus-visible {
+  outline-offset: 3px;
+}
+
+/* Respect the user's motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-page .dashboard-welcome,
+  .dashboard-page .dashboard-welcome::after,
+  .dashboard-page .dashboard-stat-card,
+  .dashboard-page .dashboard-stat-icon,
+  .dashboard-page .dashboard-analytics-card,
+  .dashboard-page .dashboard-chart-bar,
+  .dashboard-page .dashboard-difficulty-bar,
+  .dashboard-page .dashboard-recent-item,
+  .dashboard-page .dashboard-entries-heading,
+  .dashboard-page .dashboard-filters,
+  .dashboard-page .dashboard-entry-card,
+  .dashboard-page .dashboard-empty-state,
+  .dashboard-page .dashboard-empty-icon,
+  .dashboard-delete-overlay,
+  .dashboard-delete-modal {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .dashboard-page .dashboard-stat-card:hover,
+  .dashboard-page .dashboard-analytics-card:hover,
+  .dashboard-page .dashboard-entry-card:hover,
+  .dashboard-page .dashboard-recent-item:hover,
+  .dashboard-page .dashboard-primary-button:hover {
+    transform: none;
+  }
+}
