@@ -2,164 +2,264 @@
 
 ## 1. Purpose
 
-This document defines the initial authentication and security requirements for Skillora.
+This document describes the authentication architecture and security requirements for Skillora.
 
 The objective is to protect student accounts, secure private learning data, and prevent unauthorized access to application resources.
 
-## 2. Authentication Strategy
+Skillora includes JWT-based authentication, password hashing, email verification, password recovery, protected API endpoints, and user-specific data access controls.
 
-Skillora will use JWT-based authentication with a secure token-handling strategy.
+Security behavior must remain consistent with the actual backend implementation and be verified through automated tests.
 
-The final implementation must define:
+## 2. Authentication Architecture
 
-- Access-token lifetime.
+Skillora uses JSON Web Tokens (JWT) for authentication.
+
+The backend includes authentication middleware for protecting private endpoints and identifying the authenticated user.
+
+The following behaviors must be verified against the current authentication implementation:
+
+- Access-token lifetime and claims.
 - Token storage and transport.
-- Token validation.
+- Token validation and expiration handling.
 - Logout and token invalidation behavior.
-- Session renewal or refresh-token requirements.
-- Authentication behavior across browser refreshes.
+- Session renewal or refresh-token support, if implemented.
+- Authentication persistence across browser refreshes.
+- Cookie security attributes and CSRF protections, if cookies are used.
 
-These decisions must be finalized before authentication is implemented.
+Do not assume that JWT authentication automatically provides server-side session invalidation. Logout and token-revocation behavior depend on the implemented strategy.
 
 ## 3. Password Security
 
-- Passwords must never be stored in plaintext.
-- Passwords must be hashed using bcrypt before storage.
-- Password input must be validated against the application's password policy.
-- Passwords and password hashes must never appear in ordinary API responses.
-- Passwords must not be logged.
-- Password-change operations must verify the current password where appropriate.
-- Password-reset flows must use secure, expiring tokens.
+Skillora uses password hashing for account security.
+
+Security requirements include:
+
+- Never store passwords in plaintext.
+- Hash passwords before storing them.
+- Validate passwords against the application's configured password policy.
+- Never include password hashes in ordinary API responses.
+- Never log passwords or password hashes.
+- Verify the current password for password-change operations where required.
+- Validate and securely process password-reset requests.
+- Avoid exposing authentication-related implementation details through errors.
+
+The precise password policy and hashing configuration should be verified against the User model and authentication services.
 
 ## 4. Registration
 
-The registration flow will follow these steps:
+The registration workflow includes the following logical steps:
 
-1. Validate the submitted name, email, and password.
-2. Normalize the email consistently.
-3. Check for an existing account with that email.
-4. Hash the password.
-5. Create the user with `isEmailVerified` set to `false`.
-6. Generate a secure email-verification token.
-7. Send the verification link through the configured email service.
-8. Activate email verification only after the token has been validated.
+1. Receive the student's registration details.
+2. Validate the submitted data.
+3. Normalize and validate the email address according to the implementation.
+4. Handle duplicate email addresses.
+5. Hash the password before persistence.
+6. Create the user account with the appropriate verification state.
+7. Initiate the email-verification workflow.
+8. Return an appropriate response to the client.
 
-The implementation must handle duplicate registrations and email-delivery failures safely.
+The backend has implemented registration and email-verification functionality.
+
+The exact order of database writes, duplicate-account handling, rollback behavior, and verification-token storage must be confirmed from the current authentication service and User model.
 
 ## 5. Email Verification
 
-- Verification tokens must be generated securely.
-- Tokens must expire after a configured period.
-- Tokens must be single-use.
-- Token validation must be performed on the backend.
-- Verification tokens must not be exposed in application logs.
-- A resend-verification flow must be rate-limited.
-- The login policy for unverified accounts must be enforced consistently.
+Email verification helps establish ownership of the account's email address.
 
-The token-storage and expiry strategy will be finalized before implementation.
+The application supports an email-verification workflow using the configured transactional email service.
+
+Security requirements include:
+
+- Generate verification tokens securely.
+- Validate verification tokens on the backend.
+- Enforce the configured token-expiry behavior.
+- Prevent inappropriate token reuse.
+- Avoid logging verification tokens.
+- Apply suitable limits to repeated verification requests where configured.
+- Enforce the configured login policy for unverified accounts.
+
+The exact token-generation algorithm, storage format, expiry period, and resend-verification behavior must match the current implementation.
+
+### Email Delivery Provider
+
+Skillora uses **Resend** for transactional email delivery through its HTTP API.
+
+The backend configuration includes:
+
+- `RESEND_API_KEY`
+- `EMAIL_FROM`
+
+Email-provider failures should be handled safely without exposing API keys or other sensitive configuration.
+
+Direct SMTP credentials are not required for the current Resend API integration.
 
 ## 6. Login
 
-The login process will:
+The login workflow includes the following steps:
 
-1. Validate the submitted credentials.
-2. Find the account using the normalized email.
-3. Compare the supplied password with the stored hash.
-4. Apply the account's email-verification policy.
-5. Establish authentication using the selected token/session strategy.
-6. Return only permitted user information.
+1. Receive and validate the login credentials.
+2. Locate the relevant account.
+3. Compare the submitted password against the stored password hash.
+4. Apply the configured account-verification policy.
+5. Establish authenticated access using the implemented JWT mechanism.
+6. Return the permitted account information and authentication result.
 
-Authentication failures should return safe messages without exposing sensitive account details.
+Authentication failures should produce safe and consistent responses.
+
+Responses should not unnecessarily reveal sensitive account details or internal authentication logic.
+
+The exact token-delivery mechanism, token lifetime, and response structure must be verified against the current login controller and authentication middleware.
 
 ## 7. Logout
 
-Logout behavior must match the authentication design.
+Logout behavior must match the actual authentication design.
 
-The implementation must ensure that client-side logout clears the relevant authentication state. If persistent sessions or refresh tokens are used, the backend must also invalidate the relevant session or token as appropriate.
+The client should clear its local authenticated state when logout completes.
 
-A client deleting a token alone does not invalidate an otherwise valid server-accepted token.
+If the application uses persistent sessions, refresh tokens, token revocation, or server-managed session state, the relevant server-side invalidation behavior must also be implemented.
+
+If logout only removes a client-held JWT, that action does not automatically invalidate an otherwise valid token presented elsewhere.
+
+Document and test the actual logout behavior rather than assuming a specific invalidation mechanism.
 
 ## 8. Forgot Password and Reset Password
 
-### Forgot Password
+Skillora includes a password-recovery workflow.
 
-- Accept the account email.
-- Return a generic response that does not reveal whether the account exists.
-- Generate a secure, time-limited reset token for eligible accounts.
+### 8.1 Forgot Password
+
+The workflow should:
+
+- Accept a password-recovery request.
+- Validate the request.
+- Generate a reset token for an eligible account.
 - Deliver the reset link through the configured email service.
-- Apply rate limits to repeated requests.
+- Return a safe response that does not unnecessarily reveal whether an account exists.
+- Apply suitable rate limits where configured.
 
-### Reset Password
+### 8.2 Reset Password
 
-- Validate the submitted reset token.
-- Reject expired or previously used tokens.
-- Validate and hash the new password.
-- Update the stored password hash.
+The workflow should:
+
+- Validate the supplied reset token.
+- Reject invalid, expired, or previously used tokens as required.
+- Validate the new password.
+- Hash the new password before storing it.
 - Invalidate the reset token after successful use.
-- Review whether existing sessions must be invalidated after a password reset.
+- Consider whether existing authentication sessions should be invalidated.
 
-## 9. Protected Routes and API Authorization
+The exact token lifetime, persistence strategy, account-enumeration protections, and session-invalidation behavior must be verified against the current implementation.
 
-Authentication middleware must validate the authentication credentials and establish the authenticated user's identity.
+## 9. Protected Routes and Authorization
 
-Authorization rules:
+The backend uses authentication middleware to protect private API operations.
 
-- Protected endpoints require authentication.
+Authorization must be enforced independently of frontend navigation.
+
+### Data Ownership Rules
+
+- Protected endpoints must require valid authentication.
+- The backend must derive the authenticated user's identity from the verified authentication context.
 - Users may access only their own private learning entries.
-- Entry reads, updates, and deletions must enforce ownership on the server.
+- Entry retrieval, updates, and deletions must enforce ownership.
+- Dashboard analytics must be restricted to the authenticated user's records.
 - Client-provided user IDs must not be trusted as proof of ownership.
-- Sensitive profile and account operations must validate permitted fields.
-- Frontend route guards must not be treated as a security boundary.
+- Profile operations must allow only permitted fields.
+
+Knowing a resource identifier does not grant authorization to access the resource.
 
 ## 10. Token and Secret Management
 
-- JWT signing secrets must be stored in environment variables or an appropriate secret manager.
-- Tokens must have an explicit expiration policy.
-- JWT validation must verify the expected signature and claims.
-- The application must reject malformed, expired, or otherwise invalid tokens.
-- Authentication tokens must not be logged.
-- Tokens should not be stored in browser local storage by default when a safer architecture is available.
+JWT authentication requires secure token handling.
 
-The final cookie, CSRF, CORS, and refresh-token design must be selected together rather than independently.
+The application should:
+
+- Keep JWT signing secrets in environment variables or an appropriate secret manager.
+- Enforce the configured token-expiration policy.
+- Validate JWT signatures and required claims.
+- Reject malformed, expired, or otherwise invalid tokens.
+- Avoid logging authentication tokens.
+- Keep provider credentials and other secrets out of source control.
+- Use an appropriate token-storage strategy for the application's threat model.
+
+The exact token-storage mechanism must be confirmed from the implementation.
+
+If authentication uses cookies, configure appropriate `HttpOnly`, `Secure`, and `SameSite` attributes and assess CSRF protections. If it uses another transport mechanism, document its relevant security controls instead.
+
+CORS configuration, cookie settings, CSRF protection, and token transport must be designed together where applicable.
 
 ## 11. API and Application Security
+
+The backend should enforce the following controls according to the current implementation and deployment requirements:
 
 - Validate request bodies, query parameters, and route parameters.
 - Use centralized error handling.
 - Configure appropriate CORS rules.
-- Apply security headers.
-- Rate-limit sensitive authentication endpoints.
+- Apply suitable HTTP security headers.
+- Rate-limit sensitive authentication endpoints where configured.
 - Enforce request-size limits.
-- Validate file uploads by size and permitted file type.
-- Avoid returning stack traces or internal implementation details.
-- Keep dependencies updated and review security advisories.
-- Store database and email credentials outside source control.
+- Validate uploaded files by permitted type and size.
+- Avoid exposing stack traces and internal configuration.
+- Keep dependencies updated and review relevant security advisories.
+- Store database, JWT, Resend, and image-provider credentials outside source control.
+- Handle database and external-service failures safely.
+
+The presence of a security requirement in this document does not by itself prove that the control has been configured.
 
 ## 12. Privacy and Logging
 
-- Do not log passwords, authentication tokens, reset tokens, or verification tokens.
-- Avoid unnecessarily collecting personal information.
-- Exclude sensitive authentication fields from user responses.
-- Use logs for debugging and security monitoring without exposing private data.
-- Define an appropriate account-deletion and associated-data cleanup policy.
+The application should protect sensitive account and authentication information.
+
+- Do not log passwords, password hashes, or authentication tokens.
+- Avoid logging verification and reset tokens.
+- Do not expose private authentication fields in profile responses.
+- Avoid collecting unnecessary personal information.
+- Keep application logs useful for troubleshooting without exposing private data.
+- Define appropriate account-deletion and associated-data cleanup behavior.
+- Ensure test and production credentials are handled separately.
 
 ## 13. Security Testing
 
-Authentication and authorization tests must cover:
+Authentication and authorization tests should cover:
 
 - Registration with valid and invalid inputs.
 - Duplicate email registration.
 - Correct and incorrect login credentials.
-- Unverified-account behavior.
-- Expired and invalid verification tokens.
-- Password-reset token expiry and reuse.
-- Missing, malformed, and expired authentication credentials.
-- Unauthorized access to another user's entries.
-- Profile-update attempts involving restricted fields.
-- Authentication rate limits and safe error responses.
+- Email-verification behavior.
+- Invalid, expired, and reused verification tokens.
+- Forgot-password and reset-password behavior.
+- Invalid or expired authentication credentials.
+- Unauthorized access to another user's learning entries.
+- Restricted profile-field updates.
+- Password-change validation.
+- Safe handling of email-provider failures.
+- Consistent API error responses.
 
-## 14. Security Status
+The backend has a Jest-based automated test suite. The latest documented result was **83 passing tests across 7 test suites**.
 
-**Status:** Initial security design documented.
+These results should be rechecked after significant authentication or security changes. Passing tests do not automatically establish that every security requirement in this document has been implemented.
 
-Security controls are requirements, not completed features. Each control must be implemented and tested before it is marked complete.
+## 14. Security Configuration
+
+The authentication and external-service configuration may include:
+
+| Variable | Purpose |
+|---|---|
+| `JWT_SECRET` | JWT signing or verification secret, depending on implementation |
+| `MONGODB_URI` | Database connection |
+| `RESEND_API_KEY` | Resend API authentication |
+| `EMAIL_FROM` | Transactional email sender identity |
+
+Other environment variables may be required for frontend origins, cookie behavior, token expiration, or image-provider configuration.
+
+Verify exact names and usage against the current source code. Never commit production secrets or populate documentation with real credentials.
+
+## 15. Security Status
+
+Skillora has implemented authentication-related backend functionality, email verification, password-recovery workflows, protected API operations, and automated tests.
+
+Email delivery uses Resend rather than a direct SMTP connection.
+
+Security maturity must be assessed control by control. Token transport, session invalidation, rate limiting, cookie attributes, CSRF protection, and other deployment-dependent controls should be marked complete only after reviewing the implementation and verifying the relevant behavior.
+
+Update this document whenever the authentication architecture, token strategy, security configuration, or external-service integration changes.

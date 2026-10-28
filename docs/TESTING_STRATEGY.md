@@ -2,96 +2,111 @@
 
 ## 1. Purpose
 
-This document defines how Skillora will be tested during development and before release.
+This document defines the testing approach for Skillora throughout development and before release.
 
-The objective is to verify functional correctness, data security, API reliability, responsive design, and a consistent user experience.
+The objective is to verify functional correctness, data security, API reliability, error handling, and a consistent user experience.
+
+The strategy combines automated backend tests, manual API verification, and frontend behavior and responsive-layout checks.
 
 ## 2. Testing Principles
 
-- Test features against the documented requirements.
-- Test both successful and unsuccessful scenarios.
+- Test features against documented requirements.
+- Cover both successful and unsuccessful scenarios.
 - Verify server-side validation independently of frontend validation.
-- Test authorization using multiple user accounts.
+- Test authorization using separate user accounts.
 - Avoid marking features complete without evidence of verification.
 - Keep tests repeatable and maintainable.
+- Mock external services when appropriate.
 - Fix and retest defects before release.
+- Keep test configuration separate from production configuration.
 
-## 3. Testing Levels
+## 3. Testing Tools and Levels
 
-### Unit Testing
+### 3.1 Unit Testing
 
-Tests individual functions and isolated logic.
+Unit tests verify individual functions and isolated application logic.
 
-Examples:
-- Input validation.
-- Study-duration calculations.
-- Date-range calculations.
-- Dashboard aggregation helpers.
-- Utility functions.
+Examples include:
 
-**Planned tool:** Vitest.
+- Request-validation logic
+- Study-duration calculations
+- Date-range calculations
+- Analytics helpers
+- Utility functions
+- Authentication-related business logic
 
-### Integration Testing
+**Tool:** Jest.
 
-Tests how application modules work together.
+### 3.2 Integration Testing
 
-Examples:
-- Express routes with middleware and controllers.
-- Controllers and services interacting with database models.
-- Authentication and protected endpoints.
-- Learning-entry CRUD operations.
-- Profile update workflows.
+Integration tests verify how application components work together.
 
-**Planned tools:** Vitest and Supertest, with a suitable test database.
+Examples include:
 
-### API Testing
+- Express routes and middleware
+- Controllers and services
+- Authentication and protected endpoints
+- Learning-entry operations
+- Profile updates
+- Validation and error handling
 
-Verifies endpoint behavior through HTTP requests.
+**Tools:** Jest and Supertest where configured.
 
-**Planned tool:** Postman.
+Database integration tests should use an appropriate isolated test environment. External services should be mocked where live credentials or network access are unnecessary.
 
-Tests must cover:
-- Request validation.
-- HTTP status codes.
-- Response structure.
-- Authentication requirements.
-- Authorization and ownership.
-- Pagination, search, and filters.
-- Error handling.
+### 3.3 API Testing
 
-### UI Testing
+Postman is used for manual API verification.
 
-Verifies frontend behavior and visual quality.
+API testing should cover:
 
-Tests must cover:
-- Navigation.
-- Form validation.
-- Loading and empty states.
-- Success and error feedback.
-- Responsive layouts.
-- Keyboard interactions.
-- Correct rendering of API data.
+- Request validation
+- HTTP status codes
+- Response structure
+- Authentication requirements
+- Authorization and data ownership
+- Search and filters
+- Analytics calculations
+- Error handling
+- External-service failures
 
-Automated browser testing may be added when the frontend structure is established.
+### 3.4 Frontend and UX Testing
+
+Frontend verification checks the behavior and visual quality of the React application.
+
+Areas to verify include:
+
+- Navigation
+- Form validation
+- Protected-page behavior
+- Loading and empty states
+- Success and error feedback
+- Responsive layouts
+- Theme behavior
+- Keyboard interactions
+- Correct rendering of API data
+
+Automated browser testing can be introduced separately if required. Do not treat manual visual verification as equivalent to automated browser coverage.
 
 ## 4. Authentication Test Cases
 
 - [ ] Register with valid details.
 - [ ] Reject missing or invalid registration fields.
 - [ ] Handle duplicate email registration.
-- [ ] Verify password hashing.
-- [ ] Verify email using a valid token.
-- [ ] Reject expired or invalid verification tokens.
+- [ ] Verify that passwords are stored as hashes.
+- [ ] Verify an account using a valid email-verification token.
+- [ ] Reject invalid or expired verification tokens.
 - [ ] Test login with correct credentials.
 - [ ] Reject incorrect credentials.
-- [ ] Enforce the email-verification policy.
+- [ ] Verify the email-verification policy.
 - [ ] Reject protected requests without authentication.
 - [ ] Reject invalid or expired authentication credentials.
-- [ ] Verify logout behavior.
-- [ ] Test forgot-password requests without exposing account existence.
-- [ ] Reject expired or reused reset tokens.
+- [ ] Verify logout behavior according to the implemented authentication strategy.
+- [ ] Test password-recovery responses for account-enumeration risks.
+- [ ] Reject invalid, expired, or reused reset tokens where applicable.
 - [ ] Verify successful password changes and resets.
-- [ ] Test rate limits on sensitive authentication endpoints.
+- [ ] Test rate limiting on sensitive authentication endpoints where configured.
+- [ ] Verify safe handling of Resend API failures.
 
 ## 5. Learning Journal Test Cases
 
@@ -99,48 +114,52 @@ Automated browser testing may be added when the frontend structure is establishe
 - [ ] Reject missing or invalid required fields.
 - [ ] Reject invalid study durations.
 - [ ] Reject unsupported difficulty values.
-- [ ] Reject malformed entry IDs.
+- [ ] Reject malformed entry identifiers.
 - [ ] Retrieve the authenticated user's entries.
-- [ ] Retrieve a single owned entry.
+- [ ] Retrieve an entry owned by the authenticated user.
 - [ ] Update an owned entry.
 - [ ] Delete an owned entry.
 - [ ] Handle requests for nonexistent entries.
 - [ ] Prevent one user from accessing another user's entries.
 - [ ] Prevent one user from updating or deleting another user's entries.
+- [ ] Verify that invalid updates do not corrupt existing data.
 
-## 6. Dashboard Test Cases
+## 6. Dashboard and Analytics Test Cases
 
 - [ ] Verify the total entry count.
 - [ ] Verify aggregate study duration.
-- [ ] Verify hour conversion and rounding rules.
+- [ ] Verify duration conversion and rounding rules.
 - [ ] Verify weekly summaries at date boundaries.
-- [ ] Verify recently added entries are ordered correctly.
+- [ ] Verify the ordering of recently added entries.
 - [ ] Verify productivity calculations against documented rules.
+- [ ] Verify average session duration.
+- [ ] Verify unique-topic counting, including case and surrounding whitespace.
 - [ ] Verify empty-dashboard behavior.
-- [ ] Confirm that dashboard data belongs only to the authenticated user.
+- [ ] Confirm that analytics contain only the authenticated user's data.
 
 ## 7. Search and Filter Test Cases
 
 - [ ] Search by topic name.
-- [ ] Search with partial topic names.
+- [ ] Search using partial topic names, if supported.
 - [ ] Handle empty search queries.
 - [ ] Filter by difficulty.
-- [ ] Filter by a valid date range.
+- [ ] Filter by valid date ranges.
 - [ ] Handle invalid date ranges.
-- [ ] Combine search and filters.
-- [ ] Verify pagination with active filters.
+- [ ] Combine supported search and filter parameters.
+- [ ] Verify pagination and sorting where implemented.
 - [ ] Verify that results never include another user's entries.
 
 ## 8. Profile Test Cases
 
-- [ ] Retrieve the current user's profile.
+- [ ] Retrieve the authenticated user's profile.
 - [ ] Update permitted profile fields.
 - [ ] Reject invalid profile values.
 - [ ] Prevent unauthorized changes to restricted fields.
-- [ ] Upload a supported profile image.
-- [ ] Reject unsupported image types.
+- [ ] Verify supported profile-photo operations.
+- [ ] Reject unsupported image types where upload validation is implemented.
 - [ ] Reject files exceeding the configured size limit.
-- [ ] Verify profile-photo replacement and cleanup behavior.
+- [ ] Verify image-upload failure handling.
+- [ ] Verify photo replacement and cleanup behavior where supported.
 - [ ] Change the password successfully.
 - [ ] Reject an incorrect current password where required.
 - [ ] Verify the new password works and the old password no longer works.
@@ -149,67 +168,130 @@ Automated browser testing may be added when the frontend structure is establishe
 
 - [ ] Verify navigation between public pages.
 - [ ] Verify protected-page behavior.
-- [ ] Verify form validation messages.
-- [ ] Verify submit buttons prevent duplicate submissions.
+- [ ] Verify form-validation messages.
+- [ ] Verify submit buttons prevent unintended duplicate submissions.
 - [ ] Verify loading indicators appear and disappear appropriately.
 - [ ] Verify empty states and error messages.
 - [ ] Verify toast notifications for important actions.
-- [ ] Verify forms remain usable on mobile screens.
+- [ ] Verify that forms remain usable on mobile screens.
 - [ ] Check for horizontal overflow at supported viewport sizes.
 - [ ] Verify visible keyboard focus and accessible labels.
-- [ ] Verify that important controls are usable without a mouse.
-- [ ] Verify consistent Poppins typography and design tokens.
+- [ ] Verify that important controls can be operated without a mouse.
+- [ ] Verify Poppins typography and consistent styling.
+- [ ] Verify light and dark themes where implemented.
+- [ ] Verify that the mobile navigation and page layout behave correctly.
 
-## 10. Regression Testing
+## 10. External-Service Testing
 
-Whenever a defect is fixed or existing code changes, rerun relevant tests to ensure previously working behavior has not broken.
+### Resend
 
-High-priority regression areas:
-- Authentication and session handling.
-- Learning-entry CRUD operations.
-- User ownership and authorization.
-- Search, filters, and pagination.
-- Dashboard calculations.
-- Profile and password updates.
-- Responsive layout and navigation.
+Test the email integration for:
 
-## 11. Test Environment and Data
+- Successful email submission to Resend.
+- Missing API configuration.
+- Provider-reported errors.
+- Network or provider failures.
+- Safe error handling without exposing credentials.
 
-- Use test-specific configuration and database data.
+A successful API submission indicates that Resend accepted the request; it does not by itself prove final delivery to the recipient's inbox.
+
+### ImageKit
+
+Where image operations are tested:
+
+- Mock ImageKit operations in unit and route tests where appropriate.
+- Verify upload and deletion error handling.
+- Test validation of file type and size.
+- Use an isolated environment for tests that require real provider integration.
+
+The current Jest setup mocks ImageKit operations so automated tests do not require live image-provider credentials for those mocked paths.
+
+## 11. Regression Testing
+
+Whenever a defect is fixed or existing code changes, rerun the relevant tests to ensure previously working behavior has not broken.
+
+High-priority regression areas include:
+
+- Authentication and token handling
+- Email verification and password recovery
+- Learning-entry CRUD operations
+- User ownership and authorization
+- Search and filters
+- Dashboard calculations
+- Profile and password updates
+- API validation and error handling
+- Responsive layout and navigation
+
+## 12. Test Environment and Data
+
+- Use test-specific configuration and isolated test data.
 - Never run destructive automated tests against production data.
 - Use separate test accounts to verify ownership boundaries.
 - Keep secrets out of test source code and version control.
 - Clean up test data where appropriate.
 - Use controlled dates and fixtures for reliable date-related tests.
+- Mock external services when live integration is not the subject of the test.
+- Keep test mocks separate from production service behavior.
 
-## 12. Defect Management
+## 13. Running Automated Tests
+
+Run backend tests from the `server` directory:
+
+```bash
+npm test
+```
+
+Use the scripts defined in `server/package.json` as the source of truth for test commands.
+
+The backend uses Jest and has a test setup file that mocks ImageKit operations.
+
+## 14. Current Test Results
+
+The latest recorded backend test result was:
+
+| Metric | Recorded Result |
+|---|---:|
+| Passing test suites | 7 |
+| Passing tests | 83 |
+| Test runner | Jest |
+
+These results reflect a previously reported test run. Re-run the suite to confirm the current result after code changes.
+
+A passing backend suite does not automatically verify all frontend workflows, production deployment behavior, security controls, or third-party email delivery.
+
+## 15. Defect Management
 
 For each defect, record:
-- Description.
-- Steps to reproduce.
-- Expected behavior.
-- Actual behavior.
-- Severity and priority.
-- Fix status.
-- Retest result.
 
-A defect is not resolved until the fix has been retested.
+- Description
+- Steps to reproduce
+- Expected behavior
+- Actual behavior
+- Severity and priority
+- Fix status
+- Retest result
 
-## 13. Release Acceptance Criteria
+A defect should be marked resolved only after the fix has been retested.
+
+## 16. Release Acceptance Criteria
 
 Before release:
 
-- All 34 original project requirements must be implemented or explicitly documented as deferred.
+- All project requirements must be implemented or explicitly documented as deferred.
 - Critical authentication and authorization tests must pass.
-- User-owned data access must be verified.
+- Access to user-owned data must be verified.
 - Core journal and dashboard workflows must work correctly.
-- Forms and error states must be checked.
-- Responsive UI must be visually reviewed.
-- No known critical defects may remain.
+- Forms, validation, and error states must be checked.
+- Responsive UI must be reviewed on supported screen sizes.
 - Production environment configuration must be verified.
+- Email and image integrations must be checked as appropriate.
+- No known critical defects should remain.
+- Regression tests must pass after release-critical changes.
 
-## 14. Testing Status
+## 17. Testing Status
 
-**Status:** Testing strategy documented.
+Automated backend testing has been implemented using Jest, and the backend test suite has previously passed 83 tests across 7 test suites.
 
-Tests have not yet been implemented or executed. Completion will be based on actual test results, not assumptions.
+Postman is used for manual API verification. Frontend behavior, responsive layouts, production integrations, and security controls should be tracked separately according to their actual verification status.
+
+Testing status must be updated from real test results rather than assumptions.

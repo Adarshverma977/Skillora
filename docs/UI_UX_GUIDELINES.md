@@ -2,25 +2,26 @@
 
 ## 1. Design Vision
 
-Skillora will provide a premium, modern, student-friendly learning journal experience.
+Skillora is a modern, student-friendly learning journal designed to help students record daily learning activities, understand their progress, and maintain consistent study habits.
 
-The interface must feel clean, focused, intuitive, and professional. Students should be able to record learning activities, understand their progress, and navigate the application without unnecessary complexity.
+The interface should feel polished, intuitive, responsive, and professional. Visual styling should support the product's functionality rather than compete with it.
 
-**Design priorities:**
+### Design Priorities
+
 - Clarity over decoration.
 - Consistency across all pages.
-- Mobile-first responsiveness.
-- Accessible interactions.
-- Clear feedback for every important action.
-- Consistent spacing, typography, and component behavior.
+- Responsive layouts for mobile, tablet, and desktop.
+- Accessible and predictable interactions.
+- Clear feedback for important actions.
+- Consistent typography, spacing, and component behavior.
+- Reliable presentation of real API data.
+- Consistent light and dark theme behavior.
 
 ## 2. Typography
 
 **Primary font:** Poppins
 
-Poppins must be used consistently throughout the application.
-
-Recommended typography hierarchy:
+Poppins is the preferred application typeface and should be used consistently throughout the interface.
 
 | Element | Recommended Weight |
 |---|---|
@@ -32,19 +33,26 @@ Recommended typography hierarchy:
 | Buttons | 500–600 |
 | Supporting text | 400 |
 
-Typography must remain readable on mobile and desktop. Font sizes and line heights should be consistent rather than chosen independently for every component.
+### Typography Principles
 
-The font will be loaded efficiently, with suitable fallback fonts configured.
+- Maintain a clear visual hierarchy.
+- Use readable font sizes and line heights.
+- Avoid unnecessarily small supporting text.
+- Keep typography consistent across similar components.
+- Configure appropriate fallback fonts.
+- Ensure text remains readable in both themes.
 
-## 3. Visual Design
+The recommended weights are design guidelines; actual font files and CSS declarations should be checked against the frontend implementation.
 
-The application should use a restrained, cohesive design system.
+## 3. Visual Design System
 
-### Color Palette
+Skillora should use a cohesive design system for colors, surfaces, typography, borders, spacing, and interactive states.
 
-The initial palette is a proposal and will be refined during frontend implementation.
+### 3.1 Proposed Light Theme Palette
 
-| Token | Initial Value | Purpose |
+The following values are proposed design tokens, not a guarantee of the current CSS configuration.
+
+| Token | Proposed Value | Purpose |
 |---|---|---|
 | Primary | `#5B5BD6` | Primary actions and selected states |
 | Primary Hover | `#4949B5` | Hover and active interactions |
@@ -54,142 +62,232 @@ The initial palette is a proposal and will be refined during frontend implementa
 | Text Secondary | `#6B7280` | Supporting content |
 | Border | `#E5E7EB` | Dividers and component outlines |
 | Success | `#16845B` | Successful actions |
-| Warning | `#B7791F` | Warnings |
+| Warning | `#B7791F` | Warning states |
 | Error | `#D14343` | Validation and error states |
 
-Colors must provide sufficient contrast and must not be used as the only way to communicate status.
+Final token values should be reconciled with the CSS variables or design tokens actually used by the application.
 
-### Surfaces and Shadows
+### 3.2 Dark Theme
+
+The dark theme should provide a complete alternative to the light theme rather than simply applying a dark background.
+
+Guidelines:
+
+- Use appropriately dark backgrounds and distinct surface colors.
+- Maintain readable primary and secondary text.
+- Keep borders visible without making them distracting.
+- Ensure buttons, links, form fields, and selected states remain distinguishable.
+- Review charts, badges, notifications, and dialogs in both themes.
+- Avoid excessive contrast that causes visual discomfort.
+- Ensure error and success states remain understandable.
+
+The final dark-theme color values should be defined in the application's actual design tokens.
+
+### 3.3 Surfaces, Borders, and Shadows
 
 - Prefer clean surfaces and subtle borders.
 - Use consistent corner radii.
-- Apply shadows only when they improve hierarchy.
-- Avoid excessive gradients, unnecessary glass effects, and distracting animations.
-- Maintain consistent card padding and alignment.
+- Apply shadows only when they improve visual hierarchy.
+- Maintain consistent card padding.
+- Avoid unnecessary gradients, glass effects, and decorative elements.
+- Keep modal, dropdown, and popover layering predictable.
+- Ensure interactive surfaces remain visually distinguishable.
 
 ## 4. Layout and Spacing
 
-- Use a consistent spacing scale.
-- Keep page content aligned to a shared layout grid.
-- Use readable content widths for forms and journal details.
-- Maintain clear separation between page sections.
-- Prevent horizontal overflow on small screens.
+The application should use a consistent spacing scale and shared alignment rules.
+
+- Align page content to a common layout grid.
+- Keep forms and journal details within readable widths.
+- Maintain clear separation between sections.
 - Use consistent card and form spacing.
-- Ensure dashboards remain understandable when screen space is limited.
+- Avoid arbitrary spacing differences between similar components.
+- Prevent horizontal overflow on small screens.
+- Keep dashboard layouts understandable at narrower widths.
+- Ensure sticky elements do not obscure important content.
+
+The exact spacing scale, maximum content widths, and layout dimensions should be defined by the existing CSS system.
 
 ## 5. Responsive Design
 
-The application must be designed mobile-first and tested across mobile, tablet, and desktop layouts.
+Skillora should support mobile, tablet, and desktop layouts.
 
-### Mobile
+### 5.1 Mobile
 
-- Use a compact, touch-friendly navigation pattern.
-- Stack dashboard cards when necessary.
-- Ensure forms fit the available viewport.
+- Use compact, touch-friendly navigation.
+- Hide or simplify nonessential page-heading elements where appropriate.
+- Stack dashboard cards when horizontal space is limited.
+- Ensure forms fit the viewport.
 - Keep primary actions easy to reach.
-- Avoid tables or charts that overflow horizontally.
+- Prevent horizontal scrolling.
+- Make dialogs and dropdowns usable on smaller screens.
+- Preserve readable text sizes and sufficient touch targets.
 
-### Tablet
+### 5.2 Tablet
 
 - Adapt card grids and navigation to available space.
 - Maintain comfortable content widths.
-- Preserve visual hierarchy.
+- Preserve the visual hierarchy.
+- Avoid excessive empty space or overcrowded cards.
+- Verify forms and tables at intermediate viewport widths.
 
-### Desktop
+### 5.3 Desktop
 
 - Use a consistent application shell and content container.
 - Display dashboard cards in balanced grids.
 - Use available space without stretching text excessively.
 - Keep navigation and primary actions predictable.
+- Maintain consistent alignment between headings and content.
 
-Breakpoints will be finalized during implementation and verified through browser testing.
+### Responsive Verification
 
-## 6. Application Layout
+Review the actual interface at representative mobile, tablet, and desktop viewport sizes. Breakpoints must match the current CSS implementation rather than being assumed from this document.
 
-The authenticated application should have a consistent layout across its main pages.
+## 6. Application Layout and Navigation
 
-Expected areas:
+Authenticated pages should share a consistent application layout.
 
-- Navigation or sidebar.
+Expected areas include:
+
+- Sidebar or navigation.
+- Responsive navigation controls.
 - Page heading and contextual actions.
 - Main content area.
-- Consistent notification and feedback placement.
-- Responsive account/profile controls.
+- Account and profile controls.
+- Consistent notification placement.
 
-Public authentication pages may use a separate layout where appropriate.
+Public authentication pages may use a separate layout.
+
+### Navigation Guidelines
+
+- Keep navigation labels clear and predictable.
+- Highlight the current page appropriately.
+- Ensure all navigation actions work.
+- Avoid overflowing page titles or navigation items on mobile.
+- Maintain consistent spacing and alignment.
+- Preserve usable navigation when the sidebar is collapsed or hidden.
+- Verify that responsive changes do not hide essential actions.
 
 ## 7. Dashboard Design
 
 The dashboard should help students understand their learning activity at a glance.
 
-Expected components:
+Expected information includes:
 
-- Total entries card.
-- Total study time card.
+- Total learning entries.
+- Total study duration.
 - Weekly learning summary.
-- Recently added topics.
+- Recently added entries or topics.
 - Productivity overview.
+- Additional analytics where implemented.
 
-Dashboard cards must display meaningful labels and correctly formatted values. Charts or progress indicators should have clear explanations and useful empty states.
+### Dashboard Guidelines
 
-Do not show fabricated statistics as real user data.
+- Give each metric a clear label.
+- Format study duration consistently.
+- Use charts and progress indicators only when they communicate useful information.
+- Provide explanatory labels for charts.
+- Show an appropriate empty state when the user has no learning entries.
+- Avoid fabricated statistics or misleading visualizations.
+- Ensure cards remain readable at narrow viewport widths.
+- Verify that displayed metrics correspond to the authenticated user's actual data.
 
 ## 8. Learning Journal Interface
 
-The journal interface must support efficient entry management.
+The learning-journal interface should make it easy to create, find, review, and manage entries.
 
-Expected components:
+Expected interface elements include:
 
-- Learning entry list or card layout.
-- Topic title and learning date.
+- Learning-entry list or card layout.
+- Topic title and relevant date.
 - Study duration and difficulty indicator.
 - Search input.
 - Date and difficulty filters.
 - Create and edit forms.
-- Entry detail view.
-- Clear edit and delete actions.
+- Entry-detail view.
+- Edit and delete actions.
 
-Destructive actions should provide appropriate confirmation or recovery behavior where practical.
+### Interaction Guidelines
 
-## 9. Forms and Validation
+- Keep entry information easy to scan.
+- Make search and filters straightforward to use.
+- Preserve filter state appropriately during navigation where supported.
+- Provide clear feedback after create, update, and delete operations.
+- Confirm destructive actions or provide recovery behavior where practical.
+- Handle empty search results separately from loading and error states.
 
-- Every input must have a clear label.
-- Required fields must be identified appropriately.
-- Validation messages must explain how to fix the problem.
-- Invalid fields should be visually distinguishable.
-- Inputs must preserve understandable focus states.
-- Submit buttons must show an appropriate loading state.
+## 9. Profile and Settings
+
+Profile and settings pages should use the same visual language as the rest of the application.
+
+- Group related fields logically.
+- Use clear labels and helper text.
+- Make editable fields visually distinguishable.
+- Provide feedback after successful updates.
+- Display validation errors near the relevant fields.
+- Keep password-related operations clear and secure.
+- Handle profile-image loading and upload failures gracefully.
+- Avoid exposing internal account or authentication fields.
+
+## 10. Authentication Pages
+
+Registration, login, email verification, and password-recovery pages should remain consistent with the application's design system.
+
+- Use clear page titles and concise supporting text.
+- Label every form field.
+- Provide appropriate password visibility controls where implemented.
+- Display field-level validation feedback.
+- Show loading states during submissions.
+- Prevent unintended duplicate submissions.
+- Provide useful error and success feedback.
+- Keep the form layout readable on mobile.
+- Ensure both light and dark themes remain usable.
+- Avoid displaying sensitive technical error details.
+
+## 11. Forms and Validation
+
+- Provide a clear label for every input.
+- Identify required fields appropriately.
+- Explain how users can correct invalid values.
+- Make invalid fields visually distinguishable.
+- Preserve visible keyboard focus states.
+- Show loading feedback during submissions.
 - Prevent duplicate submissions while a request is in progress.
 - Display server-side validation errors clearly.
-- Use consistent validation behavior across forms.
+- Use consistent validation behavior across similar forms.
+- Ensure error messages do not shift the layout excessively.
 
-## 10. Loading, Empty, Success, and Error States
+## 12. Loading, Empty, Success, and Error States
 
-Every data-driven page must handle the following states where relevant:
+Data-driven pages should handle the following states where relevant.
 
 ### Loading
 
-Use skeletons or lightweight loading indicators that fit the component.
+Use skeletons or lightweight loading indicators appropriate to the component. Avoid unnecessary layout shifts.
 
 ### Empty
 
-Explain that no entries or results are available and provide a relevant next action.
+Explain why no results are displayed and offer a relevant next action when appropriate.
 
 ### Success
 
-Show concise confirmation for important completed actions.
+Provide concise confirmation for important completed actions.
 
 ### Error
 
-Display an understandable message and, where appropriate, a retry action.
+Display understandable messages and offer a retry action where appropriate.
 
-Avoid blank screens, unexplained failures, and infinite loading indicators.
+### Partial or Delayed Data
 
-## 11. Toast Notifications
+Keep unrelated parts of the interface usable when possible. Avoid making the entire page appear broken because one optional section fails.
 
-Toast notifications will provide concise feedback for important operations.
+Do not leave users with blank screens, unexplained failures, or infinite loading indicators.
 
-Examples:
+## 13. Toast Notifications
+
+Toast notifications provide concise feedback for important actions.
+
+Examples include:
 
 - Entry created successfully.
 - Entry updated successfully.
@@ -197,21 +295,33 @@ Examples:
 - Profile updated successfully.
 - Unable to save changes.
 
-Do not use repeated notifications for the same error. Important validation feedback should also appear near the relevant form fields.
+Guidelines:
 
-## 12. Accessibility
+- Keep messages concise and understandable.
+- Avoid repeated notifications for the same error.
+- Use appropriate visual status indicators.
+- Do not rely exclusively on toasts for form validation.
+- Ensure notifications do not obscure essential controls.
+- Verify that notifications remain readable in both themes.
+
+## 14. Accessibility
 
 - Use semantic HTML elements.
-- Provide labels for form controls.
+- Associate labels with form controls.
 - Support keyboard navigation.
 - Make focus states visible.
-- Use sufficient text and control contrast.
-- Provide accessible names for icon-only buttons.
-- Do not rely on color alone to communicate meaning.
+- Provide sufficient text and control contrast.
+- Give icon-only buttons accessible names.
+- Do not rely on color alone to communicate status.
 - Respect reduced-motion preferences.
-- Use appropriate alternative text for meaningful images.
+- Provide appropriate alternative text for meaningful images.
+- Maintain understandable heading order.
+- Ensure dialogs and dropdowns support keyboard interaction.
+- Use accessible feedback for loading and error states where appropriate.
 
-## 13. Interaction and Animation
+Accessibility should be verified through actual interaction and testing rather than inferred from visual appearance.
+
+## 15. Interaction and Animation
 
 Interactions should feel responsive and predictable.
 
@@ -221,21 +331,42 @@ Interactions should feel responsive and predictable.
 - Provide visible feedback for disabled and loading controls.
 - Ensure animation does not block important actions.
 - Respect reduced-motion preferences.
+- Maintain consistent interaction patterns across similar components.
 
-## 14. UI Quality Assurance
+Animation should support usability rather than delay important tasks.
+
+## 16. UI Quality Assurance
 
 Before marking a page complete:
 
-- Review it at mobile, tablet, and desktop sizes.
+- Review mobile, tablet, and desktop layouts.
 - Verify alignment, spacing, typography, and overflow.
-- Test forms, validation, and keyboard interactions.
+- Test forms and validation.
+- Test keyboard navigation and visible focus.
 - Verify loading, empty, success, and error states.
 - Check navigation and action consistency.
-- Confirm that real API data is displayed correctly.
-- Fix visible layout defects before moving on.
+- Confirm that displayed information matches real API data.
+- Review both light and dark themes where supported.
+- Check long text, missing images, and empty datasets.
+- Fix visible layout defects before considering the page complete.
 
-## 15. Design System Status
+## 17. Design System Maintenance
 
-**Status:** Initial UI/UX standards documented.
+The UI/UX guidelines should remain aligned with the actual frontend implementation.
 
-The palette, spacing scale, breakpoints, reusable components, and final visual details will be implemented and refined during frontend development.
+When changing the design system:
+
+1. Update the relevant CSS variables or shared styling definitions.
+2. Review affected reusable components and pages.
+3. Verify both themes.
+4. Test responsive layouts.
+5. Check accessibility and interaction states.
+6. Update this document when established design rules change.
+
+## 18. UI/UX Status
+
+Skillora has an implemented frontend with responsive navigation and theme-related UI behavior.
+
+The final palette, spacing scale, breakpoints, component standards, and accessibility behavior should be confirmed against the current CSS and React implementation.
+
+Design guidelines are not proof that every page meets the requirements. Each page should be reviewed and tested before being marked complete.
