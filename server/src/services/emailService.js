@@ -1,32 +1,42 @@
 const { Resend } = require("resend");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const sendEmail = async ({ to, subject, text, html }) => {
-  if (!process.env.RESEND_API_KEY) {
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
     throw new Error("RESEND_API_KEY is not configured");
   }
 
+  const resend = new Resend(apiKey);
+
   const from = process.env.EMAIL_FROM || "Skillora <onboarding@resend.dev>";
 
-  const { data, error } = await resend.emails.send({
-    from,
-    to,
-    subject,
-    text,
-    html,
-  });
-
-  if (error) {
-    console.error("RESEND EMAIL ERROR:", {
-      name: error.name,
-      message: error.message,
+  try {
+    const { data, error } = await resend.emails.send({
+      from,
+      to: Array.isArray(to) ? to : [to],
+      subject,
+      ...(text ? { text } : {}),
+      ...(html ? { html } : {}),
     });
 
-    throw new Error(`Email delivery failed: ${error.message}`);
-  }
+    if (error) {
+      console.error("RESEND EMAIL ERROR:", {
+        name: error.name,
+        message: error.message,
+        statusCode: error.statusCode,
+      });
 
-  return data;
+      throw new Error(`Resend email failed: ${error.message}`);
+    }
+
+    console.log("Email accepted by Resend:", data?.id);
+
+    return data;
+  } catch (error) {
+    console.error("EMAIL DELIVERY ERROR:", error.message);
+    throw error;
+  }
 };
 
 module.exports = { sendEmail };
