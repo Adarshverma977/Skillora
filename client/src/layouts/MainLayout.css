@@ -1003,3 +1003,10 @@
     gap: 6px;
   }
 }
+
+
+@media (max-width: 768px) {
+  .main-layout__breadcrumb {
+    display: none;
+  }
+}
