@@ -21,13 +21,25 @@ const createTransporter = () => {
 const sendEmail = async ({ to, subject, text, html }) => {
   const transporter = createTransporter();
 
-  return transporter.sendMail({
-    from: process.env.EMAIL_FROM || process.env.SMTP_USER,
-    to,
-    subject,
-    text,
-    html,
-  });
+  try {
+    return await transporter.sendMail({
+      from: process.env.EMAIL_FROM || process.env.SMTP_USER,
+      to,
+      subject,
+      text,
+      html,
+    });
+  } catch (error) {
+    console.error("EMAIL DELIVERY ERROR:", {
+      code: error.code,
+      command: error.command,
+      responseCode: error.responseCode,
+      response: error.response,
+      message: error.message,
+    });
+
+    throw error;
+  }
 };
 
 module.exports = { sendEmail };
