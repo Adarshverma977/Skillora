@@ -50,6 +50,13 @@ const registerUser = async ({ name, email, password }) => {
       ...emailContent,
     });
   } catch (error) {
+    console.error("SMTP ERROR:", {
+      code: error.code,
+      command: error.command,
+      responseCode: error.responseCode,
+      message: error.message,
+    });
+
     await User.findByIdAndDelete(user._id);
 
     throw new AppError(
