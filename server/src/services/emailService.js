@@ -1,45 +1,32 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-const createTransporter = () => {
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
-
-  if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS) {
-    throw new Error("Email SMTP configuration is incomplete");
-  }
-
-  return nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: Number(SMTP_PORT),
-    secure: Number(SMTP_PORT) === 465,
-    auth: {
-      user: SMTP_USER,
-      pass: SMTP_PASS,
-    },
-  });
-};
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendEmail = async ({ to, subject, text, html }) => {
-  const transporter = createTransporter();
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
 
-  try {
-    return await transporter.sendMail({
-      from: process.env.EMAIL_FROM || process.env.SMTP_USER,
-      to,
-      subject,
-      text,
-      html,
-    });
-  } catch (error) {
-    console.error("EMAIL DELIVERY ERROR:", {
-      code: error.code,
-      command: error.command,
-      responseCode: error.responseCode,
-      response: error.response,
+  const from = process.env.EMAIL_FROM || "Skillora <onboarding@resend.dev>";
+
+  const { data, error } = await resend.emails.send({
+    from,
+    to,
+    subject,
+    text,
+    html,
+  });
+
+  if (error) {
+    console.error("RESEND EMAIL ERROR:", {
+      name: error.name,
       message: error.message,
     });
 
-    throw error;
+    throw new Error(`Email delivery failed: ${error.message}`);
   }
+
+  return data;
 };
 
 module.exports = { sendEmail };
