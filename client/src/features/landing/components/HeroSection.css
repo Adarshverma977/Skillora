@@ -595,3 +595,41 @@
     transform: none;
   }
 }
+
+
+/* Precise icon centering inside floating-card boxes */
+.hero-floating-card .hero-floating-icon,
+.hero-floating-card .hero-streak-emoji {
+  display: grid !important;
+  place-items: center !important;
+  align-self: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.hero-floating-card .hero-floating-icon svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.hero-floating-card .hero-streak-emoji {
+  font-size: 20px;
+  text-align: center;
+}
+
+@media (max-width: 420px) {
+  .hero-floating-card .hero-floating-icon,
+  .hero-floating-card .hero-streak-emoji {
+    flex-basis: 38px;
+    width: 38px;
+    height: 38px;
+  }
+}
