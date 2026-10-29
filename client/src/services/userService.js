@@ -1,4 +1,5 @@
 import axios from "axios";
+import { handleSessionExpired } from "../utils/sessionHandler";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api/v1";
@@ -22,13 +23,23 @@ const addAuthHeader = (config) => {
   return config;
 };
 
+const handleApiError = (error) => {
+  if (error.response?.status === 401 && getAuthToken()) {
+    handleSessionExpired();
+  }
+
+  return Promise.reject(error);
+};
+
 userApi.interceptors.request.use(addAuthHeader);
+userApi.interceptors.response.use((response) => response, handleApiError);
 
 const uploadApi = axios.create({
   baseURL: API_BASE_URL,
 });
 
 uploadApi.interceptors.request.use(addAuthHeader);
+uploadApi.interceptors.response.use((response) => response, handleApiError);
 
 export const getMyProfile = async () => {
   const response = await userApi.get("/me");
@@ -56,7 +67,6 @@ export const uploadProfilePhoto = async (file) => {
     throw new Error("Image size must not exceed 5 MB.");
   }
 
-  // Get short-lived upload credentials from your authenticated backend.
   const authResponse = await uploadApi.get("/uploads/imagekit-auth");
   const authData = authResponse.data?.data;
 

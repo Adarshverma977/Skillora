@@ -1,4 +1,5 @@
 import axios from "axios";
+import { handleSessionExpired } from "../utils/sessionHandler";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api/v1";
@@ -23,6 +24,26 @@ authApi.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
+authApi.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status;
+    const requestUrl = error.config?.url || "";
+
+    const isLoginRequest = requestUrl.includes("/login");
+
+    if (
+      status === 401 &&
+      !isLoginRequest &&
+      localStorage.getItem("skillora-token")
+    ) {
+      handleSessionExpired();
+    }
+
+    return Promise.reject(error);
+  },
+);
+
 export const registerUser = async ({ name, email, password }) => {
   const response = await authApi.post("/register", {
     name: name.trim(),
@@ -34,10 +55,7 @@ export const registerUser = async ({ name, email, password }) => {
 };
 
 export const verifyEmail = async (token) => {
-  const response = await authApi.post("/verify-email", {
-    token,
-  });
-
+  const response = await authApi.post("/verify-email", { token });
   return response.data;
 };
 

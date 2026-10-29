@@ -3,9 +3,15 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
+
+import {
+  registerSessionExpiryHandler,
+  resetSessionExpiry,
+} from "../utils/sessionHandler";
 
 const AuthContext = createContext(null);
 
@@ -42,6 +48,7 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
 
+    resetSessionExpiry();
     setToken(authToken);
     setUser(authUser);
   }, []);
@@ -74,6 +81,10 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setUser(null);
   }, []);
+
+  useEffect(() => {
+    registerSessionExpiryHandler(logout);
+  }, [logout]);
 
   const value = useMemo(
     () => ({
